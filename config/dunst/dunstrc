@@ -1,0 +1,31 @@
+# vim: set ft=conf:
+[global]
+    # display notification on monitor with keyboard focus
+    follow = keyboard
+
+    width = (0, 600)
+    offset = 10x60
+
+    progress_bar = true
+    progress_bar_min_width = 380
+    progress_bar_max_width = 380
+    progress_bar_corner_radius = 2
+
+    padding = 10
+    horizontal_padding = 10
+    frame_width = 1
+    gap_size = 3
+    font = "Monofur Nerd Font 22"
+
+    corner_radius = 20
+
+    line_height = 2
+
+    dmenu = /usr/bin/rofi -dmenu -p dunst
+
+    # Timeout a notification popped up from history like a normal notification.
+    sticky_history = no
+
+    mouse_left_click = close_current
+    mouse_middle_click = close_all
+    mouse_right_click = do_action, close_current

@@ -1,0 +1,59 @@
+#!/bin/bash
+
+if ! command -v uname >/dev/null 2>&1; then
+    echo "uname command not found";
+    exit 1;
+fi;
+
+mkdir -p ~/.local/bin
+
+# get the arch type
+arch="$(uname -m)";
+
+# get the os type
+os="$(uname -s)";
+
+is_arm="$([[ "$arch" == "arm64" || "$arch" == "aarch64" ]] && echo 1 || echo 0)";
+is_x64="$([[ "$arch" == "amd64" || "$arch" == "x86_64" ]] && echo 1 || echo 0)";
+
+# this script only work on linux or macos, if not, exit
+if [[ "$os" != "Linux" && "$os" != "Darwin" ]]; then
+    echo "This script only works on Linux and macOS";
+    exit 1;
+fi;
+
+# this script only work on arm64 or x64, if not, exit;
+if [[ "$is_arm" -ne 1 && "$is_x64" -ne 1 ]]; then
+    echo "This script only works on arm64 or x64";
+    exit 1;
+fi;
+
+### monofur nerd font ###
+
+mkdir -p ~/.local/share/fonts
+monofur_version="${MONOFUR_VERSION:-3.2.1}"
+
+printf '\n\n\n\n'
+echo "downloading https://github.com/ryanoasis/nerd-fonts/releases/download/v${monofur_version}/Monofur.zip"
+tmp_dir="$(mktemp -d)"
+cd "$tmp_dir"
+
+curl -L -o monofur.zip "https://github.com/ryanoasis/nerd-fonts/releases/download/v${monofur_version}/Monofur.zip"
+unzip monofur.zip
+mv *.ttf ~/.local/share/fonts
+
+rm -rf "$tmp_dir"
+
+### Install Google Font ###
+
+mkdir -p ~/.local/share/fonts
+cd ~/.local/share/fonts
+
+google_font_site="https://raw.github.com/google/fonts/main"
+
+printf '\n\n\n\n'
+echo "downloading google fonts from $google_font_site"
+curl -L -o 'EBGaramond[wght].ttf' "$google_font_site/ofl/ebgaramond/EBGaramond%5Bwght%5D.ttf"
+curl -L -o 'EBGaramond-Italic[wght].ttf' "$google_font_site/ofl/ebgaramond/EBGaramond-Italic%5Bwght%5D.ttf"
+curl -L -o 'WorkSans[wght].ttf' "$google_font_site/ofl/worksans/WorkSans%5Bwght%5D.ttf"
+curl -L -o 'WorkSans-Italic[wght].ttf' "$google_font_site/ofl/worksans/WorkSans-Italic%5Bwght%5D.ttf"

@@ -1,0 +1,204 @@
+# my custom setup
+
+exec --no-startup-id dex --autostart --environment i3
+
+# setup notification daemon
+exec --no-startup-id ~/.config/dunst/launch_dunst.sh
+
+# set status bar
+exec_always --no-startup-id ~/.config/polybar/bin/launch_polybar.sh
+
+# set window special effect
+# exec_always --no-startup-id ~/.config/picom/launch_picom.sh
+
+# set wallpaper
+exec_always --no-startup-id feh --bg-scale ~/.config/feh/rose-pine-moon-wallpaper.jpeg
+exec --no-startup-id ~/.fehbg
+
+# lock the screen after 5 minutes inactivity
+exec "xautolock -detectsleep -time 5 -locker 'i3exit lock'"
+
+gaps inner 6
+gaps outer 4
+smart_gaps on
+smart_borders on
+
+default_border pixel 2
+default_floating_border pixel 2
+
+set $mod Mod4
+# hold modifier to drag the floating window
+floating_modifier $mod
+# hold modifier and drag the window to rearrange the tiling layout
+# hold modifier and right click to resize
+tiling_drag modifier titlebar
+
+for_window [window_role="pop-up"] floating enable
+
+set $term kitty
+
+font pango:Monofur Nerd Font Mono, Noto Sans CJK SC 24
+
+include ~/.config/i3/themes/rose-pine-moon.theme
+
+#### Keybindings ####
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+
+bindsym $mod+o mode "system"
+mode "system" {
+    bindsym l exec --no-startup-id i3exit lock, mode "default"
+    bindsym q exec --no-startup-id i3exit logout, mode "default"
+    bindsym r exec --no-startup-id i3exit reboot, mode "default"
+    bindsym u exec --no-startup-id i3exit switch_user, mode "default"
+    bindsym h exec --no-startup-id i3exit hibernate, mode "default"
+    bindsym s exec --no-startup-id i3exit suspend, mode "default"
+    bindsym shift+s exec --no-startup-id i3exit shutdown, mode "default"
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+grave exec kitty
+# quick launch app
+bindsym $mod+Return exec "rofi -modi drun,run -show drun"
+# quick find opened window (alt + tab)
+bindsym mod1+Tab exec --no-startup-id rofi -show window
+
+# toggle IM
+bindsym $mod+slash exec --no-startup-id fcitx5-remote -t
+
+bindsym $mod+q kill
+
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+semicolon focus parent
+bindsym $mod+colon focus child
+
+# move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+w mode "layout"
+mode "layout" {
+
+    # split in vertical orientation (i3's horizontal is actually vertical)
+    bindsym v split h; mode "default"
+    # split in horizontal orientation (i3's vertial is actually horizonal)
+    bindsym s split v; mode "default"
+
+    bindsym shift+s layout stacking; mode "default"
+    bindsym t layout tabbed; mode "default"
+    bindsym z layout toggle split; mode "default"
+
+    # change current window to a floating window
+    bindsym space floating toggle; mode "default"
+    # switch focus between tiled and floating window
+    bindsym w focus mode_toggle; mode "default"
+    bindsym $mod+w focus mode_toggle; mode "default"
+
+    # hide current window
+    bindsym minus move scratchpad; mode "default"
+    # restore hidden window
+    bindsym plus scratchpad show; mode "default"
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+# Define names for default workspaces for which we configure key bindings later on.
+# We use variables to avoid repeating the names in multiple places.
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# switch to workspace
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# move focused container to workspace
+bindsym $mod+m mode "move"
+mode "move" {
+
+    # move focused window
+    bindsym h move left
+    bindsym j move down
+    bindsym k move up
+    bindsym l move right
+
+    bindsym 1 move container to workspace number $ws1; mode "default"
+    bindsym 2 move container to workspace number $ws2; mode "default"
+    bindsym 3 move container to workspace number $ws3; mode "default"
+    bindsym 4 move container to workspace number $ws4; mode "default"
+    bindsym 5 move container to workspace number $ws5; mode "default"
+    bindsym 6 move container to workspace number $ws6; mode "default"
+    bindsym 7 move container to workspace number $ws7; mode "default"
+    bindsym 8 move container to workspace number $ws8; mode "default"
+    bindsym 9 move container to workspace number $ws9; mode "default"
+    bindsym 0 move container to workspace number $ws10; mode "default"
+
+    # rearrange the workspaces so that workspace 2 becomes workspace 1 (if
+    # workspace 1 not exists), and so on.
+    bindsym s exec --no-startup-id "i3-rearrange-workspace.py"; mode "default"
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+#### Resize Window Mode ####
+bindsym $mod+r mode "resize"
+mode "resize" {
+    bindsym h resize shrink width 10 px or 10 ppt
+    bindsym j resize grow height 10 px or 10 ppt
+    bindsym k resize shrink height 10 px or 10 ppt
+    bindsym l resize grow width 10 px or 10 ppt
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym $mod+r mode "default"
+}
+
+#### Notification Mode ####
+bindsym $mod+n mode "notification"
+mode "notification" {
+    # show previous notification
+    bindsym p exec --no-startup-id dunstctl history-pop &; mode "default"
+    bindsym c exec --no-startup-id dunstctl close-all &; mode "default"
+    bindsym k exec --no-startup-id dunstctl history-clear &; mode "default"
+    bindsym a exec --no-startup-id dunstctl context &; mode "default"
+    bindsym z exec --no-startup-id ~/.config/dunst/dunst-toggle.sh &; mode "default"
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10%
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@

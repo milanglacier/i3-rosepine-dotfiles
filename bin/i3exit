@@ -1,0 +1,39 @@
+#!/bin/sh
+# referenced from https://github.com/viyoriya/SOLUS_I3_SETUP/blob/master/to_usr_bin/i3exit
+
+if ! command -v systemctl &> /dev/null; then
+    echo "Error: systemctl not found.";
+    exit 1;
+fi;
+
+logind="systemctl"
+
+case "$1" in
+    lock)
+        blurlock
+        ;;
+    logout)
+        i3-msg exit
+        ;;
+    switch_user)
+        dm-tool switch-to-greeter
+        ;;
+    suspend)
+        blurlock && "$logind" suspend
+        ;;
+    hibernate)
+        blurlock && "$logind" hibernate
+        ;;
+    reboot)
+        "$logind" reboot
+        ;;
+    shutdown)
+        "$logind" poweroff
+        ;;
+    *)
+        echo "i3exit: missing or invalid argument!"
+        echo "Try again with: lock | logout | swtich_user | suspend | hibernate | reboot | shutdown"
+        exit 2
+esac
+
+exit 0

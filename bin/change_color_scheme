@@ -1,0 +1,206 @@
+#!/bin/bash
+
+if [ -z "$MY_DOTFILES_DIR" ]; then
+    MY_DOTFILES_DIR="$HOME/Desktop/dotfiles"
+fi;
+
+# homebrew uses gsed instead of sed, because macOS builtin sed
+# does not support sed -i without a backfile
+[ -x "$(which gsed 2> /dev/null)" ] && my_sed="gsed" || my_sed="sed"
+
+if [[ "$my_sed" == "sed" && "$(uname)" == "Darwin" ]]; then
+    echo "Please install the gnu sed and name the executable as gsed" 1>&2
+    exit 1
+fi
+
+night_timepoint=23
+day_timepoint=7
+
+# if the variable $CURRENT_BACKGROUND is not set, then set this variable based on $day_timepoint and $night_timepoint
+if [ -z "$CURRENT_BACKGROUND" ]; then
+    if [ "$(date +%H)" -ge $night_timepoint ] || [ "$(date +%H)" -le $day_timepoint ]; then
+        CURRENT_BACKGROUND="night"
+    else
+        CURRENT_BACKGROUND="day"
+    fi
+fi
+
+
+kittrc="$HOME/.config/kitty/kitty.conf"
+
+# sed -i edits files in-place, breaks symlinks. This limitation means:
+# 1. sed -i can only be safely used on original files.
+# 2. It cannot be applied directly to symlinked files.
+# 3. However, sed -i can work if the parent directory is symlinked.
+tmux_rc="$HOME/.config/tmux/tmux.conf"
+i3_rc="$HOME/.config/i3/config"
+polybar_rc="$HOME/.config/polybar/config.ini"
+rofi_rc="$HOME/.config/rofi/config.rasi"
+gtk3_rc="$HOME/.config/gtk-3.0/settings.ini"
+dunstd="$HOME/.config/dunst"
+
+theme_separator="|" # use \t as separator
+
+kitty_day="Rose Pine Dawn"
+kitty_night="Rose Pine Moon"
+
+
+tmux_day="color224"
+tmux_night="color60"
+
+i3_day="rose-pine-dawn"
+i3_night="rose-pine-moon"
+
+polybar_day="rose-pine-dawn"
+polybar_night="rose-pine-moon"
+
+gtk3_day="rose-pine-dawn"
+gtk3_night="rose-pine-moon"
+
+rofi_day="rose-pine-dawn"
+rofi_night="rose-pine-moon"
+
+function replace_theme_randomly() {
+    local rcfile="$1"
+    local theme_separator="$2"
+    local themes_to_be_selected="$3"
+    local alternative_themes="$4"
+
+    local themes_to_be_selected_length
+    local alternative_themes_length
+    local rng
+    local selected_theme
+    local theme
+
+    themes_to_be_selected_length="$(echo "${themes_to_be_selected}" | awk -F "$theme_separator" '{print NF}')"
+    alternative_themes_length="$(echo "${alternative_themes}" | awk -F "$theme_separator" '{print NF}')"
+
+    # randomly select one theme from themes_to_be_selected
+    rng="$((RANDOM % themes_to_be_selected_length))"
+
+    selected_theme="$(echo "${themes_to_be_selected}" | awk -F "$theme_separator" "{print \$$((rng + 1))}")"
+
+    # replace the theme in rcfile
+    for i in $(seq 1 "$alternative_themes_length");
+    do
+        theme="$(echo "${alternative_themes}" | awk -F "$theme_separator" "{print \$$i}")"
+        $my_sed -i "/$theme/s/$theme/$selected_theme/" "$rcfile"
+    done
+}
+
+if [ "$CURRENT_BACKGROUND" = "night" ];
+then
+
+
+    # change the color scheme of kitty
+    if [ -f "$kittrc" ];
+    then
+        replace_theme_randomly "$kittrc" "$theme_separator" "$kitty_night" "$kitty_day"
+    fi
+
+    if [ -f "$tmux_rc" ];
+    then
+        replace_theme_randomly "$tmux_rc" "$theme_separator" "$tmux_night" "$tmux_day"
+        # if there is a current running tmux daemon, reload the config
+        if [ -x "$(which tmux)" ] && tmux ls > /dev/null 2>&1;
+        then
+            tmux source-file "$tmux_rc"
+        fi
+    fi
+
+    if [ -f "$i3_rc" ];
+    then
+        replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_night" "$i3_day"
+
+        if [ -x "$(which i3-msg)" ] > /dev/null 2>&1;
+        then
+            i3-msg restart
+        fi
+    fi
+
+    if [ -f "$polybar_rc" ];
+    then
+        replace_theme_randomly "$polybar_rc" "$theme_separator" "$polybar_night" "$polybar_day"
+    fi
+
+    if [ -f "$rofi_rc" ];
+    then
+        replace_theme_randomly "$rofi_rc" "$theme_separator" "$rofi_night" "$rofi_day"
+    fi
+
+    if [ -f "$gtk3_rc" ];
+    then
+        replace_theme_randomly "$gtk3_rc" "$theme_separator" "$gtk3_night" "$gtk3_day"
+    fi
+
+    if [ -d "$dunstd" ];
+    then
+        if [[ -L "$dunstd/dunstrc.d/10-theme.conf" && -f "$dunstd/rose-pine-moon.conf" ]];
+        then
+            rm "$dunstd/dunstrc.d/10-theme.conf"
+            ln -s "../rose-pine-moon.conf" "$dunstd/dunstrc.d/10-theme.conf"
+
+            if [ -x "$(which dunst)" ] > /dev/null 2>&1;
+            then
+                killall -q dunst
+                dunst &
+            fi
+        fi
+    fi
+
+else
+    if [ -f "$kittrc" ];
+    then
+        replace_theme_randomly "$kittrc" "$theme_separator" "$kitty_day" "$kitty_night"
+    fi
+
+    if [ -f "$tmux_rc" ];
+    then
+        replace_theme_randomly "$tmux_rc" "$theme_separator" "$tmux_day" "$tmux_night"
+        # if there is a current running tmux daemon, reload the config
+        if [ -x "$(which tmux)" ] && tmux ls > /dev/null 2>&1;
+        then
+            tmux source-file "$tmux_rc"
+        fi
+    fi
+
+    if [ -f "$i3_rc" ];
+    then
+        replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_day" "$i3_night"
+
+        if [ -x "$(which i3-msg)" ] > /dev/null 2>&1;
+        then
+            i3-msg restart
+        fi
+    fi
+
+    if [ -f "$polybar_rc" ];
+    then
+        replace_theme_randomly "$polybar_rc" "$theme_separator" "$polybar_day" "$polybar_night"
+    fi
+
+    if [ -f "$rofi_rc" ];
+    then
+        replace_theme_randomly "$rofi_rc" "$theme_separator" "$rofi_day" "$rofi_night"
+    fi
+
+    if [ -f "$gtk3_rc" ];
+    then
+        replace_theme_randomly "$gtk3_rc" "$theme_separator" "$gtk3_day" "$gtk3_night"
+    fi
+
+    if [ -d "$dunstd" ];
+    then
+        if [[ -L "$dunstd/dunstrc.d/10-theme.conf" && -f "$dunstd/rose-pine-dawn.conf" ]];
+        then
+            rm "$dunstd/dunstrc.d/10-theme.conf"
+            ln -s "../rose-pine-dawn.conf" "$dunstd/dunstrc.d/10-theme.conf"
+
+            if [ -x "$(which dunst)" ] > /dev/null 2>&1;
+            then
+                killall -q dunst
+                dunst &
+            fi
+        fi
+    fi
+fi

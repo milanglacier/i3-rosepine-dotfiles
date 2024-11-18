@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if command -v zypper >/dev/null 2>&1; then
+    sudo zypper install \
+        cmake \
+        fzf \
+        gcc \
+        git \
+        git-delta \
+        htop \
+        libtool \
+        neovim \
+        npm \
+        python3-pipx \
+        ripgrep \
+        tmux \
+        vifm \
+        xclip \
+        zoxide \
+        zsh;
+
+    if [[ -n "$INSTALL_X" ]]; then
+        sudo zypper install \
+            dex \
+            xautolock \
+            fcitx5 \
+            feh \
+            google-noto-sans-sc-fonts \
+            google-noto-sans-tc-fonts \
+            i3 \
+            picom \
+            playerctl \
+            kitty \
+            MozillaFirefox \
+            NetworkManager-connection-editor \
+            polybar \
+            pulseaudio \
+            rofi \
+            thunar \
+            xinit \
+            zathura;
+    fi
+fi
