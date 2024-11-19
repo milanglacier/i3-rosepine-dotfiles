@@ -23,6 +23,8 @@ if command -v zypper >/dev/null 2>&1; then
         sudo zypper install \
             dex \
             xautolock \
+            libxcvt \
+            emacs-x11 \
             fcitx5 \
             feh \
             google-noto-sans-sc-fonts \

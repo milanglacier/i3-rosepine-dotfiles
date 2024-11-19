@@ -9,11 +9,11 @@ if ! command -v magick &> /dev/null; then
 fi;
 
 # Higher values mean stronger blur.
-RADIUS="0x${1:-3}"
+RADIUS="0x${1:-1}"
 
 # downscale to 20% and then upscale to original size to speed up blurring
 import -silent -window root png:- | \
-    magick - -scale 20% -blur "$RADIUS" -resize 500% /tmp/screenshot.png;
+    magick - -scale 5% -blur "$RADIUS" -resize 2000% /tmp/screenshot.png;
 
 i3lock -ui /tmp/screenshot.png;
 
