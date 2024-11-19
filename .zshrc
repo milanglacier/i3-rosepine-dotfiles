@@ -7,8 +7,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-[ -x "$(which brew)" ] && FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
-
 # a known issue with zsh-syntax-highlighting and termux,
 # see https://github.com/termux/termux-packages/issues/1894
 function fix_zsh_syntax_highlighting_on_termux() {
@@ -159,11 +157,7 @@ export MY_DOTFILES_DIR="$HOME/Desktop/dotfiles"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Created by `pipx` on 2022-07-31 19:12:20
 [ -d "$HOME/.local/bin" ] && export PATH="$PATH:$HOME/.local/bin"
-
-# bashcompinit must be called after compinit
-[ -x "$(which pipx)" ] && [ "$TERM" != "dumb" ] && eval "$(register-python-argcomplete pipx)"
 
 # If current shell is running inside neovim, then set nvr as the
 # default editor
@@ -175,5 +169,3 @@ if [[ $NVIM && -x "$(which nvr)" ]]; then
 fi
 
 [ -x "$(which nvim)" ] && export EDITOR=nvim
-
-export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
