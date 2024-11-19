@@ -11,7 +11,7 @@ fi;
 # Higher values mean stronger blur.
 RADIUS="0x${1:-1}"
 
-# downscale to 20% and then upscale to original size to speed up blurring
+# downscale to 5% and then upscale to original size to speed up blurring
 import -silent -window root png:- | \
     magick - -scale 5% -blur "$RADIUS" -resize 2000% /tmp/screenshot.png;
 
