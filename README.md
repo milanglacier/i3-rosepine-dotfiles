@@ -41,7 +41,7 @@ Follow these steps to set up your configuration:
 ### Install the dotfiles ###
 mkdir -p ~/Desktop
 cd ~/Desktop
-git clone git@git.sr.ht:~northyear/i3-rosepine-dotfiles dotfiles
+git clone https://github.com/milanglacier/i3-rosepine-dotfiles.git dotfiles
 cd dotfiles
 
 ### Sync configuration files ###
