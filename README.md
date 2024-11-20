@@ -47,12 +47,12 @@ cd dotfiles
 ### Sync configuration files ###
 mkdir -p ~/.config
 mkdir -p ~/.local/bin
-ln -s ~/Desktop/config/* ~/.config/
-ln -s ~/Desktop/bin/* ~/.local/bin/
-ln -s ~/Desktop/.zshrc ~/.zshrc
-ln -s ~/Desktop/.zimrc ~/.zimrc
-ln -s ~/Desktop/.zprofile ~/.zprofile
-ln -s ~/Desktop/.xinitrc ~/.xinitrc
+ln -s $(pwd)/config/* ~/.config/
+ln -s $(pwd)/bin/* ~/.local/bin/
+ln -s $(pwd)/.zshrc ~/.zshrc
+ln -s $(pwd)/.zimrc ~/.zimrc
+ln -s $(pwd)/.zprofile ~/.zprofile
+ln -s $(pwd)/.xinitrc ~/.xinitrc
 
 ### Install packages ###
 # Execute package installation only for openSUSE systems.
