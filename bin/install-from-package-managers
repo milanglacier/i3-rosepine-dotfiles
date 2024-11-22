@@ -17,6 +17,7 @@ if command -v zypper >/dev/null 2>&1; then
 
     if [[ -n "$INSTALL_X" ]]; then
         sudo zypper install \
+            dunst \
             dex \
             xautolock \
             libxcvt \
