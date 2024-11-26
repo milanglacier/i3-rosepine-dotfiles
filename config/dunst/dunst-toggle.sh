@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ "$(dunstctl is-paused)" = "true" ]; then
     dunstify -u low "dunst activated"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # referenced from https://github.com/levaphenyl/i3-blurlock/blob/main/blurlock
 

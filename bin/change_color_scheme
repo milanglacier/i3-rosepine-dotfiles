@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ -z "$MY_DOTFILES_DIR" ]; then
     MY_DOTFILES_DIR="$HOME/Desktop/dotfiles"
