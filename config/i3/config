@@ -15,7 +15,7 @@ exec_always --no-startup-id ~/.config/polybar/bin/launch_polybar.sh
 exec_always --no-startup-id feh --bg-scale ~/.config/feh/rose-pine-moon-wallpaper.jpeg
 
 # lock the screen after 5 minutes inactivity
-exec "xautolock -detectsleep -time 5 -locker 'i3exit lock'"
+exec --no-startup-id xautolock -detectsleep -time 5 -locker 'i3exit lock'
 
 ### Setup General appearance and global settings ###
 
