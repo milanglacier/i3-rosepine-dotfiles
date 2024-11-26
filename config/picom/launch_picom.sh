@@ -1,5 +1,5 @@
 #!/bin/bash
 
-killall polybar
+killall picom
 
 picom -b
