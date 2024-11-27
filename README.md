@@ -46,10 +46,9 @@ cd dotfiles
 
 ### Sync configuration files ###
 mkdir -p ~/.config
-mkdir -p ~/.local/bin
 ln -s $(pwd)/config/* ~/.config/
-ln -s $(pwd)/bin/* ~/.local/bin/
 ln -s $(pwd)/.zshrc ~/.zshrc
+ln -s $(pwd)/.zimfw-setup.sh ~/.zimfw-setup.sh
 ln -s $(pwd)/.zimrc ~/.zimrc
 ln -s $(pwd)/.zprofile ~/.zprofile
 ln -s $(pwd)/.xinitrc ~/.xinitrc
