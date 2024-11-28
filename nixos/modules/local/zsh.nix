@@ -9,8 +9,9 @@
 
         history.size = 200000;
 
-        # managing zsh using zimfw, my preferred package manager is nontrivial.
-        # Use zplug instead.
+        # While I prefer using zimfw to manage my zsh config and plugins.
+        # It is non-trivial to use zimfw on nixOS.
+        # Use zplug instead since nix home-manager has builtin support.
         zplug = {
             enable = true;
             plugins = [
