@@ -87,6 +87,8 @@ git clone https://github.com/milanglacier/nvim.git
 ### Install the dotfiles ###
 mkdir -p ~/Desktop
 cd ~/Desktop
+# !! ensure this repository is installed under ~/Desktop/dotfiles.
+# The path "Desktop/dotfiles" is hardcoded within my Nix configuration.
 git clone https://github.com/milanglacier/i3-rosepine-dotfiles.git dotfiles
 
 
