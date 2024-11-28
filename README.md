@@ -47,11 +47,11 @@ cd dotfiles
 ### Sync configuration files ###
 mkdir -p ~/.config
 ln -s $(pwd)/config/* ~/.config/
-ln -s $(pwd)/.zshrc ~/.zshrc
-ln -s $(pwd)/.zimfw-setup.sh ~/.zimfw-setup.sh
-ln -s $(pwd)/.zimrc ~/.zimrc
-ln -s $(pwd)/.zprofile ~/.zprofile
-ln -s $(pwd)/.xinitrc ~/.xinitrc
+ln -s $(pwd)/home/.zshrc ~/.zshrc
+ln -s $(pwd)/home/.zimfw-setup.sh ~/.zimfw-setup.sh
+ln -s $(pwd)/home/.zimrc ~/.zimrc
+ln -s $(pwd)/home/.zprofile ~/.zprofile
+ln -s $(pwd)/home/.xinitrc ~/.xinitrc
 
 ### Install packages ###
 # Execute package installation only for openSUSE systems.
