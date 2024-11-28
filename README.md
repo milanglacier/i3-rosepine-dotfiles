@@ -31,11 +31,13 @@ optimized for comfortable late-night viewing.
 
 # Installation
 
-This rice runs on openSUSE but is compatible with other Linux
-distributions. The only adjustment needed is modifying the package
-names to match your system's package manager.
+This rice is tested to run on openSUSE and NixOS but can be adapted for other
+Linux distributions. The primary requirement for compatibility with other
+systems is adjusting package names in accordance with your system's package
+manager.
 
-Follow these steps to set up your configuration:
+## on OpenSUSE
+
 
 ```sh
 ### Install the dotfiles ###
@@ -72,6 +74,43 @@ chsh -s $(which zsh)
 zsh
 ```
 
+Optionally, you can use my neovim configuration:
+
+```bash
+cd ~/.config
+git clone https://github.com/milanglacier/nvim.git
+```
+
+## on nixOS
+
+```sh
+### Install the dotfiles ###
+mkdir -p ~/Desktop
+cd ~/Desktop
+git clone https://github.com/milanglacier/i3-rosepine-dotfiles.git dotfiles
+
+
+### build system ###
+# Update hardware configuration
+cd ~/Desktop/dotfiles/nixos/hosts/qemu
+rm hardware-configuration.nix
+cp /etc/nixos/hardware-configuration.nix .
+
+# if you are running on aarch64
+cd ~/Desktop/dotfiles/nixos
+sudo nixos-rebuild switch --show-trace --flake '.#qemu-aarch64'
+
+# if you are running on x86_64
+sudo nixos-rebuild switch --show-trace --flake '.#qemu-x86_64'
+
+### Download wallpapers, icons, and fonts ###
+cd ~/Desktop/dotfiles
+./bin/download-release-packages
+./bin/download-rosepine-gtk3-theme.sh
+./bin/download-rosepine-wallpapers.sh
+./bin/download-rosepine-fcitx5-theme.sh
+
+```
 Optionally, you can use my neovim configuration:
 
 ```bash
