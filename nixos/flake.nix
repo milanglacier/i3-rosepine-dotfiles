@@ -16,6 +16,10 @@
         nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
         nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
+        # download my wallpaper to set up the background.
+        wallpapers.url = "github:milanglacier/wallpapers/main";
+        wallpapers.flake = false;
+
         home-manager = {
             url = "github:nix-community/home-manager/master";
 
@@ -31,6 +35,7 @@
         self,
         nixpkgs,
         home-manager,
+        wallpapers,
         ...
         }: let
             # The directory to house my dotfiles, including the nixOS config.
@@ -38,7 +43,7 @@
             # Factory function to generate system configurations based on
             # different systems, hosts, and usernames.
             generate-system = system : host : username :
-                let specialArgs = { inherit username my-dots-dir; };
+                let specialArgs = { inherit username my-dots-dir wallpapers; };
                 in
                     nixpkgs.lib.nixosSystem {
                         inherit specialArgs;

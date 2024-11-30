@@ -57,7 +57,25 @@
       "inputs": {
         "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "wallpapers": "wallpapers"
+      }
+    },
+    "wallpapers": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1732849459,
+        "narHash": "sha256-wx2AxRks+o22C9fYZzDg77F+ShpdqmE3auR/+MM7Pes=",
+        "owner": "milanglacier",
+        "repo": "wallpapers",
+        "rev": "4ab8b88685ddaa88348c550792592cae51fa8915",
+        "type": "github"
+      },
+      "original": {
+        "owner": "milanglacier",
+        "ref": "main",
+        "repo": "wallpapers",
+        "type": "github"
       }
     }
   },

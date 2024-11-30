@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{ pkgs, wallpapers, ... }: {
     # Certain programs rely on the /libexec directory, necessitating a symlink
     # from the generated Nix directory to the canonical FHS directory.
     environment.pathsToLink = ["/libexec"];
@@ -12,6 +12,7 @@
 
         displayManager = {
             lightdm.enable = true;
+            lightdm.background = "${wallpapers}/rose-pine-dawn-wallpaper.jpeg";
             gdm.enable = false;
         };
 

@@ -109,7 +109,6 @@ sudo nixos-rebuild switch --show-trace --flake '.#qemu-x86_64'
 cd ~/Desktop/dotfiles
 ./bin/download-release-packages
 ./bin/download-rosepine-gtk3-theme.sh
-./bin/download-rosepine-wallpapers.sh
 ./bin/download-rosepine-fcitx5-theme.sh
 
 ```
