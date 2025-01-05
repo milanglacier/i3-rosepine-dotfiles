@@ -2,51 +2,37 @@
     programs.zsh = {
         enable = true;
         enableCompletion = true;
+        # don't call compinit as zimfw will call it for us.
+        completionInit = "";
 
         initExtraFirst = ''
-            [[ -f $HOME/.user-zshrc ]] && source $HOME/.user-zshrc
+            [ -f "$HOME/.zsh-preload.sh" ] && source ~/.zsh-preload.sh
+            [ -f "$HOME/.zimfw-setup.sh" ] && source ~/.zimfw-setup.sh
+        '';
+        initExtra = ''
+            [ -f "$HOME/.zsh-postload.sh" ] && source ~/.zsh-postload.sh
+        '';
+        # Only startx if there is no DISPLAY and we are on the first
+        # virtual terminal
+        profileExtra = ''
+            [[ -f "${my-dots-dir config}/creds/api-keys.sh" ]] && source "${my-dots-dir config}/creds/api-keys.sh"
+            [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx
         '';
 
         history.size = 200000;
-
-        # While I prefer using zimfw to manage my zsh config and plugins.
-        # It is non-trivial to use zimfw on nixOS.
-        # Use zplug instead since nix home-manager has builtin support.
-        zplug = {
-            enable = true;
-            plugins = [
-                { name = "zimfw/environment"; }
-                { name = "zimfw/input"; }
-                { name = "zimfw/utility"; }
-                { name = "zimfw/termtitle"; }
-                { name = "zsh-users/zsh-autosuggestions"; }
-                { name = "zsh-users/zsh-syntax-highlighting"; }
-                { name = "zsh-users/zsh-history-substring-search"; tags = [defer:2]; }
-                { name = "zsh-users/zsh-completions"; tags = [defer:3]; }
-                { name = "Aloxaf/fzf-tab"; tags = [depth:1]; }
-                { name = "romkatv/powerlevel10k"; tags = [as:theme depth:1]; }
-            ];
-
-        };
     };
 
     # Make xdg-open and open the same between macOS and Linux
     home.shellAliases.${if pkgs.stdenv.isLinux then "open" else "xdg-open"} =
         "${if pkgs.stdenv.isLinux then "xdg-open" else "open"}";
 
-    home.file.".user-zshrc".source = let
-        dots-dir = my-dots-dir config;
-        link = config.lib.file.mkOutOfStoreSymlink;
-    in
-        link "${dots-dir}/home/.zshrc";
-
     home.sessionPath = ["$HOME/.local/bin" "${my-dots-dir config}/bin"];
 
-    home.file.".xprofile".text =  ''
-        export QT_SCALE_FATOR=2
-        export PATH="$HOME/.local/bin:$PATH"
-        export PATH="$PATH:${my-dots-dir config}/bin"
+    home.file.".xinitrc".text = ''
+        export QT_SCALE_FACTOR=2
         # This is required for IM working in kitty
         export GLFW_IM_MODULE=ibus
+        export LIBGL_ALWAYS_SOFTWARE=1
+        exec i3
     '';
 }
