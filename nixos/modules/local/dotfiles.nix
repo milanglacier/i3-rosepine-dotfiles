@@ -16,6 +16,8 @@ in
         ".zimrc" = link-home ".zimrc";
     };
     xdg.configFile = {
+        "nvim" = link-xdg "nvim";
+        "emacs" = link-xdg "emacs";
         "dunst" = link-xdg "dunst";
         "gtk-3.0" = link-xdg "gtk-3.0";
         "i3" = link-xdg "i3";

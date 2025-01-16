@@ -112,11 +112,12 @@ cd ~/Desktop/dotfiles
 ./bin/download-rosepine-fcitx5-theme.sh
 
 ```
-Optionally, you can use my neovim configuration:
+Optionally, you can use my neovim and emacs configuration, they are available
+as submodules.
 
 ```bash
-cd ~/.config
-git clone https://github.com/milanglacier/nvim.git
+cd ~/Desktop/dotfiles
+git submodule update --init --recursive
 ```
 
 # Keybindings
