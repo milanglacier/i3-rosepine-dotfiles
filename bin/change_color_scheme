@@ -16,12 +16,12 @@ fi
 night_timepoint=23
 day_timepoint=7
 
-# if the variable $CURRENT_BACKGROUND is not set, then set this variable based on $day_timepoint and $night_timepoint
-if [ -z "$CURRENT_BACKGROUND" ]; then
+# if the variable $THEME_MODE is not set, then set this variable based on $day_timepoint and $night_timepoint
+if [ -z "$THEME_MODE" ]; then
     if [ "$(date +%H)" -ge $night_timepoint ] || [ "$(date +%H)" -le $day_timepoint ]; then
-        CURRENT_BACKGROUND="night"
+        THEME_MODE="night"
     else
-        CURRENT_BACKGROUND="day"
+        THEME_MODE="day"
     fi
 fi
 
@@ -88,7 +88,7 @@ function replace_theme_randomly() {
     done
 }
 
-if [ "$CURRENT_BACKGROUND" = "night" ];
+if [ "$THEME_MODE" = "night" ];
 then
 
 

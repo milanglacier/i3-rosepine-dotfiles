@@ -220,7 +220,7 @@ and reload the i3 configuration:
    - Dawn theme: Active between 7AM and 11PM
    - Moon theme: Active between 11PM and 7AM
    - Override time-based selection using environment variable:
-     `CURRENT_BACKGROUND=night change_color_scheme`
+     `THEME_MODE=night change_color_scheme` or `THEME_MODE=day change_color_scheme`
 
 2. `xrandr-change-resolution.sh`
    - Modifies monitor resolution
