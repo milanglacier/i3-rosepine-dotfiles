@@ -24,8 +24,8 @@ unset key
 # manually compile tmux-256color terminfo and put it under $HOME/.local/share/terminfo directory
 [ -d "$HOME/.local/share/terminfo" ] && export TERMINFO_DIRS=$HOME/.local/share/terminfo${TERMINFO_DIRS+:$TERMINFO_DIRS}
 
-[[ -x "$(which fzf)" ]] && source <(fzf --zsh)
-[ -x "$(which zoxide)" ] && eval "$(zoxide init zsh)"
+command -v fzf >/dev/null && source <(fzf --zsh)
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -39,16 +39,16 @@ fi
 [ -d "$HOME/.local/bin" ] && export PATH="$PATH:$HOME/.local/bin"
 
 # bashcompinit must be called after compinit
-[ -x "$(which pipx)" ] && \
+command -v pipx >/dev/null && \
     [ "$TERM" != "dumb" ] && \
-    [ -x "$(which register-python-argcomplete)" ] && \
+    command -v register-python-argcomplete >/dev/null && \
     eval "$(register-python-argcomplete pipx)"
 
-[ -x "$(which nvim)" ] && export EDITOR=nvim
+command -v nvim >/dev/null && export EDITOR=nvim
 
 # If current shell is running inside neovim, then set nvr as the
 # default editor
-if [[ $NVIM && -x "$(which nvr)" ]]; then
+if [[ $NVIM ]] && command -v nvr >/dev/null; then
     # open a new tab in current neovim process to open the file and
     # the nvr process is blocking. Only quit the nvr process if the
     # opened buffer is killed by current neovim process.

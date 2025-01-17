@@ -7,7 +7,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-[ -x "$(which brew)" ] && FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+command -v brew >/dev/null && FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 
 # a known issue with zsh-syntax-highlighting and termux,
 # see https://github.com/termux/termux-packages/issues/1894
