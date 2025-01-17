@@ -6,7 +6,7 @@ fi;
 
 # homebrew uses gsed instead of sed, because macOS builtin sed
 # does not support sed -i without a backfile
-[ -x "$(which gsed 2> /dev/null)" ] && my_sed="gsed" || my_sed="sed"
+command -v gsed >/dev/null 2>&1 && my_sed="gsed" || my_sed="sed"
 
 if [[ "$my_sed" == "sed" && "$(uname)" == "Darwin" ]]; then
     echo "Please install the gnu sed and name the executable as gsed" 1>&2
@@ -91,30 +91,20 @@ function replace_theme_randomly() {
 if [ "$THEME_MODE" = "night" ];
 then
 
-
     # change the color scheme of kitty
     if [ -f "$kittrc" ];
     then
         replace_theme_randomly "$kittrc" "$theme_separator" "$kitty_night" "$kitty_day"
     fi
 
+
     if [ -f "$tmux_rc" ];
     then
         replace_theme_randomly "$tmux_rc" "$theme_separator" "$tmux_night" "$tmux_day"
         # if there is a current running tmux daemon, reload the config
-        if [ -x "$(which tmux)" ] && tmux ls > /dev/null 2>&1;
+        if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1;
         then
             tmux source-file "$tmux_rc"
-        fi
-    fi
-
-    if [ -f "$i3_rc" ];
-    then
-        replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_night" "$i3_day"
-
-        if [ -x "$(which i3-msg)" ] > /dev/null 2>&1;
-        then
-            i3-msg restart
         fi
     fi
 
@@ -140,15 +130,26 @@ then
             rm "$dunstd/dunstrc.d/10-theme.conf"
             ln -s "../rose-pine-moon.conf" "$dunstd/dunstrc.d/10-theme.conf"
 
-            if [ -x "$(which dunst)" ] > /dev/null 2>&1;
+            if command -v dunst >/dev/null 2>&1;
             then
-                killall -q dunst
+                killall -q -r dunst
                 dunst &
             fi
         fi
     fi
 
+    if [ -f "$i3_rc" ];
+    then
+        replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_night" "$i3_day"
+
+        if command -v i3-msg >/dev/null 2>&1;
+        then
+            i3-msg restart
+        fi
+    fi
+
 else
+
     if [ -f "$kittrc" ];
     then
         replace_theme_randomly "$kittrc" "$theme_separator" "$kitty_day" "$kitty_night"
@@ -158,19 +159,9 @@ else
     then
         replace_theme_randomly "$tmux_rc" "$theme_separator" "$tmux_day" "$tmux_night"
         # if there is a current running tmux daemon, reload the config
-        if [ -x "$(which tmux)" ] && tmux ls > /dev/null 2>&1;
+        if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1;
         then
             tmux source-file "$tmux_rc"
-        fi
-    fi
-
-    if [ -f "$i3_rc" ];
-    then
-        replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_day" "$i3_night"
-
-        if [ -x "$(which i3-msg)" ] > /dev/null 2>&1;
-        then
-            i3-msg restart
         fi
     fi
 
@@ -196,11 +187,21 @@ else
             rm "$dunstd/dunstrc.d/10-theme.conf"
             ln -s "../rose-pine-dawn.conf" "$dunstd/dunstrc.d/10-theme.conf"
 
-            if [ -x "$(which dunst)" ] > /dev/null 2>&1;
+            if command -v dunst >/dev/null 2>&1;
             then
-                killall -q dunst
+                killall -q -r dunst
                 dunst &
             fi
+        fi
+    fi
+
+    if [ -f "$i3_rc" ];
+    then
+        replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_day" "$i3_night"
+
+        if command -v i3-msg >/dev/null 2>&1;
+        then
+            i3-msg restart
         fi
     fi
 fi
