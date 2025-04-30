@@ -5,13 +5,16 @@
         # don't call compinit as zimfw will call it for us.
         completionInit = "";
 
-        initExtraFirst = ''
-            [ -f "$HOME/.zsh-preload.sh" ] && source ~/.zsh-preload.sh
-            [ -f "$HOME/.zimfw-setup.sh" ] && source ~/.zimfw-setup.sh
-        '';
-        initExtra = ''
-            [ -f "$HOME/.zsh-postload.sh" ] && source ~/.zsh-postload.sh
-        '';
+        initContent = let
+            zshConfigBeforeInit = lib.mkOrder 500
+                ''
+                [ -f "$HOME/.zsh-preload.sh" ] && source ~/.zsh-preload.sh
+                [ -f "$HOME/.zimfw-setup.sh" ] && source ~/.zimfw-setup.sh'';
+            zshConfigAfterInit = lib.mkOrder 1200
+                ''[ -f "$HOME/.zsh-postload.sh" ] && source ~/.zsh-postload.sh'';
+        in
+            lib.mkMerge [ zshConfigBeforeInit zshConfigAfterInit ];
+
         # Only startx if there is no DISPLAY and we are on the first
         # virtual terminal
         profileExtra = ''
