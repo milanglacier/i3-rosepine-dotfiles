@@ -26,7 +26,6 @@
         xdg-utils
 
         nodejs
-        nodePackages.npm
     ];
 
     environment.shells = [pkgs.zsh];
