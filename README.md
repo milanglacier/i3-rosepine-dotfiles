@@ -14,8 +14,8 @@
 
 ## Dawn Theme (7AM-11PM)
 
-![Rose Pine Dawn](./assets/i3-rose-pine-dawn-with-picom-nvim-firefox.jpg)
-![Rose Pine Dawn Void](./assets/i3-rose-pine-dawn-void.png)
+![Rose Pine Dawn](./assets/showcases/i3-rose-pine-dawn-with-picom-nvim-firefox.jpg)
+![Rose Pine Dawn Void](./assets/showcases/i3-rose-pine-dawn-void.png)
 
 A serene workspace featuring misty mountains and soft pastels. The
 light background complements the green text in Neovim, creating an
@@ -23,8 +23,8 @@ ideal environment for morning coding sessions.
 
 ## Moon Theme (11PM-7AM)
 
-![Rose Pine Moon](./assets/i3-rose-pine-moon-with-picom-nvim-firefox.png)
-![Rose Pine Moon Void](./assets/i3-rose-pine-moon-void.png)
+![Rose Pine Moon](./assets/showcases/i3-rose-pine-moon-with-picom-nvim-firefox.png)
+![Rose Pine Moon Void](./assets/showcases/i3-rose-pine-moon-void.png)
 
 Night mode features deep purples and blues with cyan accents,
 optimized for comfortable late-night viewing.
