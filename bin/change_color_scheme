@@ -58,6 +58,15 @@ gtk3_night="rose-pine-moon"
 rofi_day="rose-pine-dawn"
 rofi_night="rose-pine-moon"
 
+is_graphical_session() {
+    # Consider X11 or Wayland sessions as graphical
+    if [ -n "$DISPLAY" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 function replace_theme_randomly() {
     local rcfile="$1"
     local theme_separator="$2"
@@ -117,7 +126,7 @@ if [ "$THEME_MODE" = "night" ]; then
             rm "$dunstd/dunstrc.d/10-theme.conf"
             ln -s "../rose-pine-moon.conf" "$dunstd/dunstrc.d/10-theme.conf"
 
-            if command -v dunst >/dev/null 2>&1; then
+            if command -v dunst >/dev/null 2>&1 && is_graphical_session; then
                 killall -q -r dunst
                 dunst &
             fi
@@ -127,7 +136,7 @@ if [ "$THEME_MODE" = "night" ]; then
     if [ -f "$i3_rc" ]; then
         replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_night" "$i3_day"
 
-        if command -v i3-msg >/dev/null 2>&1; then
+        if command -v i3-msg >/dev/null 2>&1 && i3-msg -t get_version >/dev/null 2>&1; then
             i3-msg restart
         fi
     fi
@@ -163,7 +172,7 @@ else
             rm "$dunstd/dunstrc.d/10-theme.conf"
             ln -s "../rose-pine-dawn.conf" "$dunstd/dunstrc.d/10-theme.conf"
 
-            if command -v dunst >/dev/null 2>&1; then
+            if command -v dunst >/dev/null 2>&1 && is_graphical_session; then
                 killall -q -r dunst
                 dunst &
             fi
@@ -173,7 +182,7 @@ else
     if [ -f "$i3_rc" ]; then
         replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_day" "$i3_night"
 
-        if command -v i3-msg >/dev/null 2>&1; then
+        if command -v i3-msg >/dev/null 2>&1 && i3-msg -t get_version >/dev/null 2>&1; then
             i3-msg restart
         fi
     fi
