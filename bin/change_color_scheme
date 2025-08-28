@@ -2,13 +2,13 @@
 
 if [ -z "$MY_DOTFILES_DIR" ]; then
     MY_DOTFILES_DIR="$HOME/Desktop/dotfiles"
-fi;
+fi
 
 # homebrew uses gsed instead of sed, because macOS builtin sed
 # does not support sed -i without a backfile
-command -v gsed >/dev/null 2>&1 && my_sed="gsed" || my_sed="sed"
+command -v gsed >/dev/null 2>&1 && SED_PROGRAM="gsed" || SED_PROGRAM="sed"
 
-if [[ "$my_sed" == "sed" && "$(uname)" == "Darwin" ]]; then
+if [[ "$SED_PROGRAM" == "sed" && "$(uname)" == "Darwin" ]]; then
     echo "Please install the gnu sed and name the executable as gsed" 1>&2
     exit 1
 fi
@@ -24,7 +24,6 @@ if [ -z "$THEME_MODE" ]; then
         THEME_MODE="day"
     fi
 fi
-
 
 kittrc="$HOME/.config/kitty/kitty.conf"
 
@@ -43,7 +42,6 @@ theme_separator="|" # use \t as separator
 
 kitty_day="Rose Pine Dawn"
 kitty_night="Rose Pine Moon"
-
 
 tmux_day="color224"
 tmux_night="color60"
@@ -81,126 +79,101 @@ function replace_theme_randomly() {
     selected_theme="$(echo "${themes_to_be_selected}" | awk -F "$theme_separator" "{print \$$((rng + 1))}")"
 
     # replace the theme in rcfile
-    for i in $(seq 1 "$alternative_themes_length");
-    do
+    for i in $(seq 1 "$alternative_themes_length"); do
         theme="$(echo "${alternative_themes}" | awk -F "$theme_separator" "{print \$$i}")"
-        $my_sed -i "/$theme/s/$theme/$selected_theme/" "$rcfile"
+        $SED_PROGRAM -i "/$theme/s/$theme/$selected_theme/" "$rcfile"
     done
 }
 
-if [ "$THEME_MODE" = "night" ];
-then
+if [ "$THEME_MODE" = "night" ]; then
 
     # change the color scheme of kitty
-    if [ -f "$kittrc" ];
-    then
+    if [ -f "$kittrc" ]; then
         replace_theme_randomly "$kittrc" "$theme_separator" "$kitty_night" "$kitty_day"
     fi
 
-
-    if [ -f "$tmux_rc" ];
-    then
+    if [ -f "$tmux_rc" ]; then
         replace_theme_randomly "$tmux_rc" "$theme_separator" "$tmux_night" "$tmux_day"
         # if there is a current running tmux daemon, reload the config
-        if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1;
-        then
+        if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1; then
             tmux source-file "$tmux_rc"
         fi
     fi
 
-    if [ -f "$polybar_rc" ];
-    then
+    if [ -f "$polybar_rc" ]; then
         replace_theme_randomly "$polybar_rc" "$theme_separator" "$polybar_night" "$polybar_day"
     fi
 
-    if [ -f "$rofi_rc" ];
-    then
+    if [ -f "$rofi_rc" ]; then
         replace_theme_randomly "$rofi_rc" "$theme_separator" "$rofi_night" "$rofi_day"
     fi
 
-    if [ -f "$gtk3_rc" ];
-    then
+    if [ -f "$gtk3_rc" ]; then
         replace_theme_randomly "$gtk3_rc" "$theme_separator" "$gtk3_night" "$gtk3_day"
     fi
 
-    if [ -d "$dunstd" ];
-    then
-        if [[ -L "$dunstd/dunstrc.d/10-theme.conf" && -f "$dunstd/rose-pine-moon.conf" ]];
-        then
+    if [ -d "$dunstd" ]; then
+        if [[ -L "$dunstd/dunstrc.d/10-theme.conf" && -f "$dunstd/rose-pine-moon.conf" ]]; then
             rm "$dunstd/dunstrc.d/10-theme.conf"
             ln -s "../rose-pine-moon.conf" "$dunstd/dunstrc.d/10-theme.conf"
 
-            if command -v dunst >/dev/null 2>&1;
-            then
+            if command -v dunst >/dev/null 2>&1; then
                 killall -q -r dunst
                 dunst &
             fi
         fi
     fi
 
-    if [ -f "$i3_rc" ];
-    then
+    if [ -f "$i3_rc" ]; then
         replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_night" "$i3_day"
 
-        if command -v i3-msg >/dev/null 2>&1;
-        then
+        if command -v i3-msg >/dev/null 2>&1; then
             i3-msg restart
         fi
     fi
 
 else
 
-    if [ -f "$kittrc" ];
-    then
+    if [ -f "$kittrc" ]; then
         replace_theme_randomly "$kittrc" "$theme_separator" "$kitty_day" "$kitty_night"
     fi
 
-    if [ -f "$tmux_rc" ];
-    then
+    if [ -f "$tmux_rc" ]; then
         replace_theme_randomly "$tmux_rc" "$theme_separator" "$tmux_day" "$tmux_night"
         # if there is a current running tmux daemon, reload the config
-        if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1;
-        then
+        if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1; then
             tmux source-file "$tmux_rc"
         fi
     fi
 
-    if [ -f "$polybar_rc" ];
-    then
+    if [ -f "$polybar_rc" ]; then
         replace_theme_randomly "$polybar_rc" "$theme_separator" "$polybar_day" "$polybar_night"
     fi
 
-    if [ -f "$rofi_rc" ];
-    then
+    if [ -f "$rofi_rc" ]; then
         replace_theme_randomly "$rofi_rc" "$theme_separator" "$rofi_day" "$rofi_night"
     fi
 
-    if [ -f "$gtk3_rc" ];
-    then
+    if [ -f "$gtk3_rc" ]; then
         replace_theme_randomly "$gtk3_rc" "$theme_separator" "$gtk3_day" "$gtk3_night"
     fi
 
-    if [ -d "$dunstd" ];
-    then
-        if [[ -L "$dunstd/dunstrc.d/10-theme.conf" && -f "$dunstd/rose-pine-dawn.conf" ]];
-        then
+    if [ -d "$dunstd" ]; then
+        if [[ -L "$dunstd/dunstrc.d/10-theme.conf" && -f "$dunstd/rose-pine-dawn.conf" ]]; then
             rm "$dunstd/dunstrc.d/10-theme.conf"
             ln -s "../rose-pine-dawn.conf" "$dunstd/dunstrc.d/10-theme.conf"
 
-            if command -v dunst >/dev/null 2>&1;
-            then
+            if command -v dunst >/dev/null 2>&1; then
                 killall -q -r dunst
                 dunst &
             fi
         fi
     fi
 
-    if [ -f "$i3_rc" ];
-    then
+    if [ -f "$i3_rc" ]; then
         replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_day" "$i3_night"
 
-        if command -v i3-msg >/dev/null 2>&1;
-        then
+        if command -v i3-msg >/dev/null 2>&1; then
             i3-msg restart
         fi
     fi
