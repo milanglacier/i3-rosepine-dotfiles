@@ -63,7 +63,7 @@ if command -v zypper; then
 fi
 
 # Install fonts and theme components
-./bin/download-release-packages
+./bin/download-release-packages --all
 ./bin/download-rosepine-gtk3-theme.sh
 ./bin/download-rosepine-wallpapers.sh
 ./bin/download-rosepine-fcitx5-theme.sh
