@@ -1,59 +1,450 @@
 #!/usr/bin/env bash
 
+set -e
+
 if ! command -v uname >/dev/null 2>&1; then
-    echo "uname command not found";
-    exit 1;
-fi;
+    echo "uname command not found"
+    exit 1
+fi
 
 mkdir -p ~/.local/bin
 
 # get the arch type
-arch="$(uname -m)";
+arch="$(uname -m)"
 
 # get the os type
-os="$(uname -s)";
+os="$(uname -s)"
 
-is_arm="$([[ "$arch" == "arm64" || "$arch" == "aarch64" ]] && echo 1 || echo 0)";
-is_x64="$([[ "$arch" == "amd64" || "$arch" == "x86_64" ]] && echo 1 || echo 0)";
+if [[ "$arch" == "arm64" || "$arch" == "aarch64" ]]; then
+    is_arm=1
+else
+    is_arm=0
+fi
+if [[ "$arch" == "amd64" || "$arch" == "x86_64" ]]; then
+    is_x64=1
+else
+    is_x64=0
+fi
+
+# Version variables
+aichat_version=${AICHAT_VERSION:-0.30.0}
+codex_version=${CODEX_VERSION:-0.27.0}
+ctags_version="${CTAGS_VERSION:-2025.04.07}"
+ctags_commit="${CTAGS_COMMIT:-c3b54845afa2bbdf3121be1db71e0b0d3c8ab019}"
+lazygit_version="${LAZYGIT_VERSION:-0.54.2}"
+zellij_version="${ZELLIJ_VERSION:-0.43.1}"
+monofur_version="${MONOFUR_VERSION:-3.2.1}"
+pandoc_version="${PANDOC_VERSION:-3.6.4}"
+yazi_version="${YAZI_VERSION:-25.5.31}"
+crush_version="${CRUSH_VERSION:-0.7.4}"
 
 # this script only work on linux or macos, if not, exit
 if [[ "$os" != "Linux" && "$os" != "Darwin" ]]; then
-    echo "This script only works on Linux and macOS";
-    exit 1;
-fi;
+    echo "This script only works on Linux and macOS"
+    exit 1
+fi
 
 # this script only work on arm64 or x64, if not, exit;
 if [[ "$is_arm" -ne 1 && "$is_x64" -ne 1 ]]; then
-    echo "This script only works on arm64 or x64";
-    exit 1;
-fi;
+    echo "This script only works on arm64 or x64"
+    exit 1
+fi
+
+#### aichat ####
+
+install_aichat() {
+    local aichat_arch
+    local aichat_os
+    if [[ $is_arm -eq 1 ]]; then
+        aichat_arch="aarch64"
+    else
+        aichat_arch="x86_64"
+    fi
+    if [[ $os == "Linux" ]]; then
+        aichat_os="unknown-linux-musl"
+    else
+        aichat_os="apple-darwin"
+    fi
+
+    local url="https://github.com/sigoden/aichat/releases/download/v${aichat_version}/aichat-v${aichat_version}-${aichat_arch}-${aichat_os}.tar.gz"
+    echo "downloading ${url}"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    echo "$tmp_dir"
+    cd "$tmp_dir"
+
+    curl -L -o aichat.tar.gz "$url"
+    tar -xf aichat.tar.gz
+    mv aichat ~/.local/bin/
+    rm -rf "$tmp_dir"
+}
+
+#### codex ####
+
+install_codex() {
+    local codex_arch
+    local codex_os
+    if [[ $is_arm -eq 1 ]]; then
+        codex_arch="aarch64"
+    else
+        codex_arch="x86_64"
+    fi
+    if [[ $os == "Linux" ]]; then
+        codex_os="unknown-linux-musl"
+    else
+        codex_os="apple-darwin"
+    fi
+
+    printf '\n\n\n\n'
+    local url="https://github.com/openai/codex/releases/download/rust-v${codex_version}/codex-${codex_arch}-${codex_os}.tar.gz"
+    echo "downloading ${url}"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    echo "$tmp_dir"
+    cd "$tmp_dir"
+
+    curl -L -o codex.tar.gz "$url"
+    tar -xf codex.tar.gz
+    # The tarball contains a single binary named with target triple; install as `codex`.
+    mv "codex-${codex_arch}-${codex_os}" ~/.local/bin/codex
+    rm -rf "$tmp_dir"
+}
+
+#### ctags ####
+
+install_ctags() {
+    local ctags_arch
+    local ctags_os
+    if [[ $is_arm -eq 1 && $os == "Linux" ]]; then
+        ctags_arch="aarch64"
+    elif [[ $is_arm -eq 1 && $os == "Darwin" ]]; then
+        ctags_arch="arm64"
+    else
+        ctags_arch="x86_64"
+    fi
+    if [[ $os == "Linux" ]]; then
+        ctags_os="linux"
+    else
+        ctags_os="macos-15.0"
+    fi
+
+    printf '\n\n\n\n'
+    local url="https://github.com/universal-ctags/ctags-nightly-build/releases/download/${ctags_version}%2B${ctags_commit}/uctags-${ctags_version}-${ctags_os}-${ctags_arch}.release.tar.gz"
+    echo "downloading ${url}"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    echo "$tmp_dir"
+    cd "$tmp_dir"
+
+    curl -L -o ctags.tar.gz "$url"
+    tar -xf ctags.tar.gz
+    mv "uctags-${ctags_version}-${ctags_os}-${ctags_arch}.release/bin/ctags" ~/.local/bin/
+    mv "uctags-${ctags_version}-${ctags_os}-${ctags_arch}.release/bin/readtags" ~/.local/bin/
+    rm -rf "$tmp_dir"
+}
+
+#### lazygit ####
+
+install_lazygit() {
+    local lazygit_arch
+    local lazygit_os
+    if [[ $is_arm -eq 1 ]]; then
+        lazygit_arch="arm64"
+    else
+        lazygit_arch="x86_64"
+    fi
+    if [[ $os == "Linux" ]]; then
+        lazygit_os="Linux"
+    else
+        lazygit_os="Darwin"
+    fi
+
+    printf '\n\n\n\n'
+    local url="https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_${lazygit_os}_${lazygit_arch}.tar.gz"
+    echo "downloading ${url}"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    echo "$tmp_dir"
+    cd "$tmp_dir"
+
+    curl -L -o lazygit.tar.gz "$url"
+    tar -xf lazygit.tar.gz
+    mv lazygit ~/.local/bin
+    rm -rf "$tmp_dir"
+}
+
+#### zellij ####
+
+install_zellij() {
+    local zellij_arch
+    local zellij_os
+    if [[ $is_arm -eq 1 ]]; then
+        zellij_arch="aarch64"
+    else
+        zellij_arch="x86_64"
+    fi
+    if [[ $os == "Linux" ]]; then
+        zellij_os="unknown-linux-musl"
+    else
+        zellij_os="apple-darwin"
+    fi
+
+    printf '\n\n\n\n'
+    local url="https://github.com/zellij-org/zellij/releases/download/v${zellij_version}/zellij-${zellij_arch}-${zellij_os}.tar.gz"
+    echo "downloading ${url}"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    cd "$tmp_dir"
+
+    curl -L -o zellij.tar.gz "$url"
+    tar -xf zellij.tar.gz
+    mv zellij ~/.local/bin/
+    rm -rf "$tmp_dir"
+}
+
+#### crush ####
+
+install_crush() {
+    # Map to Charm’s asset naming: crush_<ver>_<OS>_<ARCH>.tar.gz
+    local crush_arch
+    local crush_os
+    if [[ $is_arm -eq 1 ]]; then
+        crush_arch="arm64"
+    else
+        crush_arch="x86_64"
+    fi
+
+    if [[ $os == "Linux" ]]; then
+        crush_os="Linux"
+    else
+        crush_os="Darwin"
+    fi
+
+    # check if termux is available
+    if command -v termux-chroot >/dev/null 2>&1; then
+        crush_os="Android"
+    fi
+
+    printf '\n\n\n\n'
+    local url="https://github.com/charmbracelet/crush/releases/download/v${crush_version}/crush_${crush_version}_${crush_os}_${crush_arch}.tar.gz"
+    echo "downloading ${url}"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    cd "$tmp_dir"
+
+    curl -L -o crush.tar.gz "$url"
+    tar -xf crush.tar.gz
+    mv "crush_${crush_version}_${crush_os}_${crush_arch}/crush" ~/.local/bin/crush
+    rm -rf "$tmp_dir"
+}
 
 ### monofur nerd font ###
 
-mkdir -p ~/.local/share/fonts
-monofur_version="${MONOFUR_VERSION:-3.2.1}"
+install_monofur_font() {
+    mkdir -p ~/.local/share/fonts
 
-printf '\n\n\n\n'
-echo "downloading https://github.com/ryanoasis/nerd-fonts/releases/download/v${monofur_version}/Monofur.zip"
-tmp_dir="$(mktemp -d)"
-cd "$tmp_dir"
+    printf '\n\n\n\n'
+    local url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${monofur_version}/Monofur.zip"
+    echo "downloading ${url}"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    cd "$tmp_dir"
 
-curl -L -o monofur.zip "https://github.com/ryanoasis/nerd-fonts/releases/download/v${monofur_version}/Monofur.zip"
-unzip monofur.zip
-mv *.ttf ~/.local/share/fonts
+    curl -L -o monofur.zip "$url"
+    unzip monofur.zip
+    mv ./*.ttf ~/.local/share/fonts
 
-rm -rf "$tmp_dir"
+    rm -rf "$tmp_dir"
+}
 
 ### Install Google Font ###
 
-mkdir -p ~/.local/share/fonts
-cd ~/.local/share/fonts
+install_google_font() {
+    mkdir -p ~/.local/share/fonts
+    cd ~/.local/share/fonts
 
-google_font_site="https://raw.github.com/google/fonts/main"
+    local google_font_site="https://raw.github.com/google/fonts/main"
 
-printf '\n\n\n\n'
-echo "downloading google fonts from $google_font_site"
-curl -L -o 'EBGaramond[wght].ttf' "$google_font_site/ofl/ebgaramond/EBGaramond%5Bwght%5D.ttf"
-curl -L -o 'EBGaramond-Italic[wght].ttf' "$google_font_site/ofl/ebgaramond/EBGaramond-Italic%5Bwght%5D.ttf"
-curl -L -o 'WorkSans[wght].ttf' "$google_font_site/ofl/worksans/WorkSans%5Bwght%5D.ttf"
-curl -L -o 'WorkSans-Italic[wght].ttf' "$google_font_site/ofl/worksans/WorkSans-Italic%5Bwght%5D.ttf"
+    printf '\n\n\n\n'
+    echo "downloading google fonts from $google_font_site"
+    curl -L -o 'EBGaramond[wght].ttf' "$google_font_site/ofl/ebgaramond/EBGaramond%5Bwght%5D.ttf"
+    curl -L -o 'EBGaramond-Italic[wght].ttf' "$google_font_site/ofl/ebgaramond/EBGaramond-Italic%5Bwght%5D.ttf"
+    curl -L -o 'WorkSans[wght].ttf' "$google_font_site/ofl/worksans/WorkSans%5Bwght%5D.ttf"
+    curl -L -o 'WorkSans-Italic[wght].ttf' "$google_font_site/ofl/worksans/WorkSans-Italic%5Bwght%5D.ttf"
+}
+
+### pandoc ###
+
+install_pandoc() {
+    local pandoc_path
+    if [[ "$is_arm" -eq 1 && "$os" == "Darwin" ]]; then
+        pandoc_path="pandoc-${pandoc_version}-arm64-macOS.zip"
+    elif [[ "$is_arm" -eq 1 && "$os" == "Linux" ]]; then
+        pandoc_path="pandoc-${pandoc_version}-linux-arm64.tar.gz"
+    elif [[ "$is_x64" -eq 1 && "$os" == "Darwin" ]]; then
+        pandoc_path="pandoc-${pandoc_version}-x86_64-macOS.zip"
+    elif [[ "$is_x64" -eq 1 && "$os" == "Linux" ]]; then
+        pandoc_path="pandoc-${pandoc_version}-linux-amd64.tar.gz"
+    fi
+
+    local pandoc_site="https://github.com/jgm/pandoc/releases/download/${pandoc_version}"
+
+    printf '\n\n\n\n'
+    local url="${pandoc_site}/${pandoc_path}"
+    echo "downloading ${url}"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    cd "$tmp_dir"
+
+    curl -L -o "${pandoc_path}" "${url}"
+    if echo "$pandoc_path" | grep zip >/dev/null 2>&1; then
+        unzip "${pandoc_path}"
+        if [[ $is_arm -eq 1 ]]; then
+            mv "pandoc-${pandoc_version}-arm64/bin/pandoc" ~/.local/bin
+        else
+            mv "pandoc-${pandoc_version}-x86_64/bin/pandoc" ~/.local/bin
+        fi
+    elif echo "$pandoc_path" | grep tar >/dev/null 2>&1; then
+        tar -xf "${pandoc_path}"
+        mv "pandoc-${pandoc_version}/bin/pandoc" ~/.local/bin
+    fi
+
+    rm -rf "$tmp_dir"
+}
+
+install_yazi() {
+    local yazi_arch
+    local yazi_os
+    if [[ $is_arm -eq 1 ]]; then
+        yazi_arch="aarch64"
+    else
+        yazi_arch="x86_64"
+    fi
+    if [[ $os == "Linux" ]]; then
+        yazi_os="unknown-linux-musl"
+    else
+        yazi_os="apple-darwin"
+    fi
+
+    printf '\n\n\n\n'
+    local url="https://github.com/sxyazi/yazi/releases/download/v${yazi_version}/yazi-${yazi_arch}-${yazi_os}.zip"
+    echo "downloading ${url}"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    cd "$tmp_dir"
+
+    curl -L -o yazi.zip "$url"
+    unzip yazi.zip
+
+    local yazi_folder="yazi-${yazi_arch}-${yazi_os}"
+    mv "${yazi_folder}/yazi" ~/.local/bin/
+    mv "${yazi_folder}/ya" ~/.local/bin/
+
+    rm -rf "$tmp_dir"
+}
+
+# Initialize package flags (default: install nothing)
+install_aichat=0
+install_codex=0
+install_ctags=0
+install_lazygit=0
+install_zellij=0
+install_monofur_font=0
+install_google_font=0
+install_pandoc=0
+install_yazi=0
+install_crush=0
+
+# Parse command-line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+    --all)
+        install_aichat=1
+        install_codex=1
+        install_ctags=1
+        install_lazygit=1
+        install_zellij=1
+        install_monofur_font=1
+        install_google_font=1
+        install_pandoc=1
+        install_yazi=1
+        install_crush=1
+        ;;
+    --package)
+        if [[ -z "$2" ]]; then
+            echo "Error: --package requires a package name"
+            exit 1
+        fi
+        case $2 in
+        aichat) install_aichat=1 ;;
+        codex) install_codex=1 ;;
+        ctags) install_ctags=1 ;;
+        lazygit) install_lazygit=1 ;;
+        zellij) install_zellij=1 ;;
+        monofur-font) install_monofur_font=1 ;;
+        google-font) install_google_font=1 ;;
+        pandoc) install_pandoc=1 ;;
+        yazi) install_yazi=1 ;;
+        crush) install_crush=1 ;;
+        *)
+            echo "Unknown package: $2"
+            echo "Available packages: aichat, codex, ctags, lazygit, zellij, monofur-font, google-font, pandoc, yazi, crush"
+            exit 1
+            ;;
+        esac
+        shift
+        ;;
+    --help | -h)
+        echo "Usage: $0 [options]"
+        echo "Options:"
+        echo "  --all                Install all packages"
+        echo "  --package <name>     Install specific package"
+        echo "  --help, -h           Show this help message"
+        echo ""
+        echo "Available packages: aichat, codex, ctags, lazygit, zellij, monofur-font, google-font, pandoc, yazi, crush"
+        echo ""
+        echo "Examples:"
+        echo "  $0 --all"
+        echo "  $0 --package yazi --package google-font"
+        exit 0
+        ;;
+    *)
+        echo "Unknown option: $1"
+        echo "Use --help for usage information"
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+# Install selected packages
+if [[ "$install_aichat" -eq 1 ]]; then
+    install_aichat
+fi
+if [[ "$install_codex" -eq 1 ]]; then
+    install_codex
+fi
+if [[ "$install_ctags" -eq 1 ]]; then
+    install_ctags
+fi
+if [[ "$install_lazygit" -eq 1 ]]; then
+    install_lazygit
+fi
+if [[ "$install_zellij" -eq 1 ]]; then
+    install_zellij
+fi
+if [[ "$install_monofur_font" -eq 1 ]]; then
+    install_monofur_font
+fi
+if [[ "$install_google_font" -eq 1 ]]; then
+    install_google_font
+fi
+if [[ "$install_pandoc" -eq 1 ]]; then
+    install_pandoc
+fi
+if [[ "$install_yazi" -eq 1 ]]; then
+    install_yazi
+fi
+if [[ "$install_crush" -eq 1 ]]; then
+    install_crush
+fi
