@@ -38,7 +38,6 @@ manager.
 
 ## on OpenSUSE
 
-
 ```sh
 ### Install the dotfiles ###
 mkdir -p ~/Desktop
@@ -110,8 +109,8 @@ cd ~/Desktop/dotfiles
 ./bin/download-release-packages
 ./bin/download-rosepine-gtk3-theme.sh
 ./bin/download-rosepine-fcitx5-theme.sh
-
 ```
+
 Optionally, you can use my neovim and emacs configuration, they are available
 as submodules.
 
@@ -124,85 +123,85 @@ git submodule update --init --recursive
 
 Non-mode keymap:
 
-| Keys | Description |
-|------ |------------- |
-| Super+Shift+c | Reload configuration file |
-| Super+Shift+r | Restart i3 |
-| Super+grave | Launch kitty terminal |
-| Super+Return | Launch rofi application launcher |
-| Alt+Tab | Show window switcher |
-| Super+slash | Toggle input method |
-| Super+q | Kill focused window |
-| Super+h/j/k/l | Focus left/down/up/right |
-| Super+semicolon | Focus parent |
-| Super+colon | Focus child |
-| Super+Shift+h/j/k/l | Move window left/down/up/right |
-| Super+f | Toggle fullscreen |
-| Super+[1-0] | Switch to workspace 1-10 |
-| Super+F12 | Increase volume |
-| Super+F11 | Decrease volume |
-| Super+F10 | Toggle mute |
-| XF86AudioRaiseVolume | Increase volume |
-| XF86AudioLowerVolume | Decrease volume |
-| XF86AudioMute | Toggle mute |
-| XF86AudioMicMute | Toggle microphone mute |
+| Keys                 | Description                      |
+| -------------------- | -------------------------------- |
+| Super+Shift+c        | Reload configuration file        |
+| Super+Shift+r        | Restart i3                       |
+| Super+grave          | Launch kitty terminal            |
+| Super+Return         | Launch rofi application launcher |
+| Alt+Tab              | Show window switcher             |
+| Super+slash          | Toggle input method              |
+| Super+q              | Kill focused window              |
+| Super+h/j/k/l        | Focus left/down/up/right         |
+| Super+semicolon      | Focus parent                     |
+| Super+colon          | Focus child                      |
+| Super+Shift+h/j/k/l  | Move window left/down/up/right   |
+| Super+f              | Toggle fullscreen                |
+| Super+[1-0]          | Switch to workspace 1-10         |
+| Super+F12            | Increase volume                  |
+| Super+F11            | Decrease volume                  |
+| Super+F10            | Toggle mute                      |
+| XF86AudioRaiseVolume | Increase volume                  |
+| XF86AudioLowerVolume | Decrease volume                  |
+| XF86AudioMute        | Toggle mute                      |
+| XF86AudioMicMute     | Toggle microphone mute           |
 
 Mode keymap:
 
-| Keys | Description |
-|------ |------------- |
-| Super+o | Enter system mode |
-| Super+w | Enter layout mode |
-| Super+m | Enter move mode |
-| Super+r | Enter resize mode |
+| Keys    | Description             |
+| ------- | ----------------------- |
+| Super+o | Enter system mode       |
+| Super+w | Enter layout mode       |
+| Super+m | Enter move mode         |
+| Super+r | Enter resize mode       |
 | Super+n | Enter notification mode |
 
 Layout mode options:
 
-| Keys | Description |
-|------ |------------- |
-| v | Split vertically |
-| s | Split horizontally |
-| Shift+s | Stacking layout |
-| t | Tabbed layout |
-| z | Toggle split layout |
-| space | Toggle floating |
-| w | Toggle focus between tiled/floating |
-| minus | Move to scratchpad |
-| plus | Show scratchpad |
+| Keys    | Description                         |
+| ------- | ----------------------------------- |
+| v       | Split vertically                    |
+| s       | Split horizontally                  |
+| Shift+s | Stacking layout                     |
+| t       | Tabbed layout                       |
+| z       | Toggle split layout                 |
+| space   | Toggle floating                     |
+| w       | Toggle focus between tiled/floating |
+| minus   | Move to scratchpad                  |
+| plus    | Show scratchpad                     |
 
 System mode options:
 
-| Keys | Description |
-|------ |-------------|
-| l | Lock |
-| q | Logout |
-| r | Reboot |
-| u | Switch user |
-| h | Hibernate |
-| s | Suspend |
-| Shift+s | Shutdown |
+| Keys    | Description |
+| ------- | ----------- |
+| l       | Lock        |
+| q       | Logout      |
+| r       | Reboot      |
+| u       | Switch user |
+| h       | Hibernate   |
+| s       | Suspend     |
+| Shift+s | Shutdown    |
 
 Notification mode options:
 
-| Keys | Description |
-|------|------------- |
-| p | Show previous notification |
-| c | Close all notifications |
-| k | Clear notification history |
-| a | Show notification context |
-| z | Toggle notifications |
+| Keys | Description                |
+| ---- | -------------------------- |
+| p    | Show previous notification |
+| c    | Close all notifications    |
+| k    | Clear notification history |
+| a    | Show notification context  |
+| z    | Toggle notifications       |
 
 Move mode options:
 
-| Keys | Description |
-|------|-------------------------- |
-| h | Move window left |
-| j | Move window down |
-| k | Move window up |
-| l | Move window right |
-| 1-0 | Move container to workspace 1-10 |
-| s | Rearrange workspaces sequentially |
+| Keys | Description                       |
+| ---- | --------------------------------- |
+| h    | Move window left                  |
+| j    | Move window down                  |
+| k    | Move window up                    |
+| l    | Move window right                 |
+| 1-0  | Move container to workspace 1-10  |
+| s    | Rearrange workspaces sequentially |
 
 # Notes
 
@@ -216,6 +215,7 @@ and reload the i3 configuration:
 # Useful Scripts
 
 1. `change_color_scheme`
+
    - Switches between Rose Pine Dawn and Rose Pine Moon themes based
      on system time
    - Dawn theme: Active between 7AM and 11PM
