@@ -1,6 +1,38 @@
 #!/usr/bin/env bash
 
+# NOTE: Ensure this script is compatible with bash version 3.2, which is the
+# default version included with macOS.
+
 set -e
+
+# Version variables
+aichat_version=${AICHAT_VERSION:-0.30.0}
+codex_version=${CODEX_VERSION:-0.27.0}
+ctags_version="${CTAGS_VERSION:-2025.04.07}"
+ctags_commit="${CTAGS_COMMIT:-c3b54845afa2bbdf3121be1db71e0b0d3c8ab019}"
+lazygit_version="${LAZYGIT_VERSION:-0.54.2}"
+zellij_version="${ZELLIJ_VERSION:-0.43.1}"
+monofur_version="${MONOFUR_VERSION:-3.2.1}"
+pandoc_version="${PANDOC_VERSION:-3.6.4}"
+yazi_version="${YAZI_VERSION:-25.5.31}"
+crush_version="${CRUSH_VERSION:-0.7.4}"
+
+# Available packages as a bash array
+AVAILABLE_PACKAGES=(
+    aichat
+    codex
+    ctags
+    lazygit
+    zellij
+    monofur-font
+    google-font
+    pandoc
+    yazi
+    crush
+)
+
+# Selected packages as a bash array
+SELECTED_PACKAGES=()
 
 if ! command -v uname >/dev/null 2>&1; then
     echo "uname command not found"
@@ -26,17 +58,33 @@ else
     is_x64=0
 fi
 
-# Version variables
-aichat_version=${AICHAT_VERSION:-0.30.0}
-codex_version=${CODEX_VERSION:-0.27.0}
-ctags_version="${CTAGS_VERSION:-2025.04.07}"
-ctags_commit="${CTAGS_COMMIT:-c3b54845afa2bbdf3121be1db71e0b0d3c8ab019}"
-lazygit_version="${LAZYGIT_VERSION:-0.54.2}"
-zellij_version="${ZELLIJ_VERSION:-0.43.1}"
-monofur_version="${MONOFUR_VERSION:-3.2.1}"
-pandoc_version="${PANDOC_VERSION:-3.6.4}"
-yazi_version="${YAZI_VERSION:-25.5.31}"
-crush_version="${CRUSH_VERSION:-0.7.4}"
+# Helpers for array membership and printing
+is_in_available() {
+    local search="$1"
+    local pkg
+    for pkg in "${AVAILABLE_PACKAGES[@]}"; do
+        if [[ "$pkg" == "$search" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+print_available() {
+    echo "${AVAILABLE_PACKAGES[*]}"
+}
+
+# Append to SELECTED_PACKAGES only if not present
+add_selected_if_missing() {
+    local search="$1"
+    local pkg
+    for pkg in "${SELECTED_PACKAGES[@]}"; do
+        if [[ "$pkg" == "$search" ]]; then
+            return 0
+        fi
+    done
+    SELECTED_PACKAGES+=("$search")
+}
 
 # this script only work on linux or macos, if not, exit
 if [[ "$os" != "Linux" && "$os" != "Darwin" ]]; then
@@ -343,55 +391,44 @@ install_yazi() {
     rm -rf "$tmp_dir"
 }
 
-# Initialize package flags (default: install nothing)
-install_aichat=0
-install_codex=0
-install_ctags=0
-install_lazygit=0
-install_zellij=0
-install_monofur_font=0
-install_google_font=0
-install_pandoc=0
-install_yazi=0
-install_crush=0
+# Function to validate and install a package
+install_package() {
+    local package="$1"
+
+    # Check if package exists in available packages
+    if ! is_in_available "$package"; then
+        echo "Unknown package: $package"
+        echo "Available packages: $(print_available)"
+        exit 1
+    fi
+
+    # Convert package name to function name
+    local func_name
+    func_name="install_$(echo "$package" | tr '-' '_')"
+
+    # Call the install function dynamically
+    "$func_name"
+}
 
 # Parse command-line arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
     --all)
-        install_aichat=1
-        install_codex=1
-        install_ctags=1
-        install_lazygit=1
-        install_zellij=1
-        install_monofur_font=1
-        install_google_font=1
-        install_pandoc=1
-        install_yazi=1
-        install_crush=1
+        SELECTED_PACKAGES=("${AVAILABLE_PACKAGES[@]}")
         ;;
     --package)
         if [[ -z "$2" ]]; then
             echo "Error: --package requires a package name"
             exit 1
         fi
-        case $2 in
-        aichat) install_aichat=1 ;;
-        codex) install_codex=1 ;;
-        ctags) install_ctags=1 ;;
-        lazygit) install_lazygit=1 ;;
-        zellij) install_zellij=1 ;;
-        monofur-font) install_monofur_font=1 ;;
-        google-font) install_google_font=1 ;;
-        pandoc) install_pandoc=1 ;;
-        yazi) install_yazi=1 ;;
-        crush) install_crush=1 ;;
-        *)
+        # Check if package exists in available packages
+        if is_in_available "$2"; then
+            add_selected_if_missing "$2"
+        else
             echo "Unknown package: $2"
-            echo "Available packages: aichat, codex, ctags, lazygit, zellij, monofur-font, google-font, pandoc, yazi, crush"
+            echo "Available packages: $(print_available)"
             exit 1
-            ;;
-        esac
+        fi
         shift
         ;;
     --help | -h)
@@ -401,7 +438,7 @@ while [[ "$#" -gt 0 ]]; do
         echo "  --package <name>     Install specific package"
         echo "  --help, -h           Show this help message"
         echo ""
-        echo "Available packages: aichat, codex, ctags, lazygit, zellij, monofur-font, google-font, pandoc, yazi, crush"
+        echo "Available packages: $(print_available)"
         echo ""
         echo "Examples:"
         echo "  $0 --all"
@@ -417,34 +454,14 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
+# If no packages were selected, emit an error
+if ((${#SELECTED_PACKAGES[@]} == 0)); then
+    echo "Error: no packages selected. Use --all or --package <name>." >&2
+    echo "See --help for usage and available packages." >&2
+    exit 1
+fi
+
 # Install selected packages
-if [[ "$install_aichat" -eq 1 ]]; then
-    install_aichat
-fi
-if [[ "$install_codex" -eq 1 ]]; then
-    install_codex
-fi
-if [[ "$install_ctags" -eq 1 ]]; then
-    install_ctags
-fi
-if [[ "$install_lazygit" -eq 1 ]]; then
-    install_lazygit
-fi
-if [[ "$install_zellij" -eq 1 ]]; then
-    install_zellij
-fi
-if [[ "$install_monofur_font" -eq 1 ]]; then
-    install_monofur_font
-fi
-if [[ "$install_google_font" -eq 1 ]]; then
-    install_google_font
-fi
-if [[ "$install_pandoc" -eq 1 ]]; then
-    install_pandoc
-fi
-if [[ "$install_yazi" -eq 1 ]]; then
-    install_yazi
-fi
-if [[ "$install_crush" -eq 1 ]]; then
-    install_crush
-fi
+for package in "${SELECTED_PACKAGES[@]}"; do
+    install_package "$package"
+done
