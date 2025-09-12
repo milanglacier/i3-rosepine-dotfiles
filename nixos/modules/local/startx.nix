@@ -1,4 +1,4 @@
-{ pkgs, config, osConfig, my-dots-dir, lib, ... }:
+{ pkgs, config, osConfig, lib, ... }:
 let
     shell = osConfig.users.users.${config.home.username}.shell;
 in {
