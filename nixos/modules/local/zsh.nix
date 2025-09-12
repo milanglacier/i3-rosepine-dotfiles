@@ -17,9 +17,8 @@
 
         # Only startx if there is no DISPLAY and we are on the first
         # virtual terminal
-        profileExtra = ''
+        profileExtra = lib.mkOrder 500 ''
             [[ -f "${my-dots-dir config}/creds/api-keys.sh" ]] && source "${my-dots-dir config}/creds/api-keys.sh"
-            [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx
         '';
 
         history.size = 200000;
@@ -30,12 +29,4 @@
         "${if pkgs.stdenv.isLinux then "xdg-open" else "open"}";
 
     home.sessionPath = ["$HOME/.local/bin" "${my-dots-dir config}/bin"];
-
-    home.file.".xinitrc".text = ''
-        export QT_SCALE_FACTOR=2
-        # This is required for IM working in kitty
-        export GLFW_IM_MODULE=ibus
-        export LIBGL_ALWAYS_SOFTWARE=1
-        exec i3
-    '';
 }
