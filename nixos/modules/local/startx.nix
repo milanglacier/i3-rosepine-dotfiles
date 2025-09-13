@@ -1,6 +1,8 @@
 { pkgs, config, osConfig, lib, ... }:
 let
-    shell = osConfig.users.users.${config.home.username}.shell;
+    shell = if (osConfig != null) then osConfig.users.users.${config.home.username}.shell else pkgs.zsh;
+    systemWindowManager = if (osConfig != null) then osConfig.services.displayManager.defaultSession else null;
+    windowManager = if (systemWindowManager != null) then systemWindowManager else "none+i3";
 in {
     programs.${shell.pname} = {
         # Only startx if there is no DISPLAY and we are on the first
@@ -16,6 +18,6 @@ in {
         export GLFW_IM_MODULE=ibus
         export LIBGL_ALWAYS_SOFTWARE=1
         # Extract the session name (e.g., "i3" from "none+i3") and execute it.
-        exec ${lib.last (builtins.split "\\+" osConfig.services.displayManager.defaultSession)}
+        exec ${lib.last (builtins.split "\\+" windowManager)}
     '';
 }
