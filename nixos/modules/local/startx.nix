@@ -6,8 +6,8 @@
             description = "Shell package of the user";
         };
         windowManager = lib.mkOption {
-            type = lib.types.str;
-            default = "none+i3";
+            type = lib.types.nullOr lib.types.str;
+            default = null;
             description = "Window Manager session of the user";
         };
     };
@@ -22,7 +22,7 @@
             windowManager = lib.mkIf (sysSession != null) (lib.mkDefault sysSession);
         };
 
-        programs.${cfg.shell.pname} = {
+        programs.${cfg.shell.pname} = lib.mkIf (cfg.windowManager != null) {
             # Only startx if there is no DISPLAY and we are on the first
             # virtual terminal
             profileExtra = lib.mkOrder 1000 ''
@@ -30,15 +30,15 @@
             '';
         };
 
-        home.file.".xinitrc".text = let
-            windowManager = cfg.windowManager;
-        in ''
-        export QT_SCALE_FACTOR=2
-        # This is required for IM working in kitty
-        export GLFW_IM_MODULE=ibus
-        export LIBGL_ALWAYS_SOFTWARE=1
-        # Extract the session name (e.g., "i3" from "none+i3") and execute it.
-        exec ${lib.last (builtins.split "\\+" windowManager)}
-        '';
+        home.file.".xinitrc" = lib.mkIf (cfg.windowManager != null) {
+            # Extract the session name (e.g., "i3" from "none+i3") and execute it.
+            text = ''
+            export QT_SCALE_FACTOR=2
+            # This is required for IM working in kitty
+            export GLFW_IM_MODULE=ibus
+            export LIBGL_ALWAYS_SOFTWARE=1
+            exec ${lib.last (builtins.split "\\+" cfg.windowManager)}
+            '';
+        };
     };
 }
