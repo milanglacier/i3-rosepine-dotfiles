@@ -2,13 +2,13 @@
 
 {
     imports = [
-        ../../modules/system/system.nix
-        ../../modules/system/fhs.nix
-        ../../modules/system/common.nix
-        ../../modules/system/gui.nix
-        ../../modules/system/fcitx5.nix
-        ../../modules/system/gui-apps.nix
-        ../../modules/system/browsers.nix
+        ../../modules/nixOS/system.nix
+        ../../modules/nixOS/fhs.nix
+        ../../modules/nixOS/common.nix
+        ../../modules/nixOS/gui.nix
+        ../../modules/nixOS/fcitx5.nix
+        ../../modules/nixOS/gui-apps.nix
+        ../../modules/nixOS/browsers.nix
 
         # Include the results of the hardware scan.
         ./hardware-configuration.nix
