@@ -15,8 +15,6 @@
         in
             lib.mkMerge [ zshConfigBeforeInit zshConfigAfterInit ];
 
-        # Only startx if there is no DISPLAY and we are on the first
-        # virtual terminal
         profileExtra = lib.mkOrder 500 ''
             [[ -f "${my-dots-dir config}/creds/api-keys.sh" ]] && source "${my-dots-dir config}/creds/api-keys.sh"
         '';
