@@ -1,28 +1,31 @@
 { pkgs, config, osConfig, lib, ... }: {
-    options.milanglacier.${config.home.username} = {
+    options.milanglacier.windowManager = {
         shell = lib.mkOption {
             type = lib.types.package;
             default = pkgs.zsh;
-            description = "Shell package of the user";
+            description = ''
+            The shell used to create the profile for launching the X server.
+            This should likely be your interactive login shell.
+            '';
         };
-        windowManager = lib.mkOption {
+        name = lib.mkOption {
             type = lib.types.nullOr lib.types.str;
             default = null;
-            description = "Window Manager session of the user";
+            description = "The primary window manager session to be launched by startx.";
         };
     };
 
     config = let
         sysShell = if (osConfig != null) then osConfig.users.users.${config.home.username}.shell else null;
         sysSession = if (osConfig != null) then osConfig.services.displayManager.defaultSession else null;
-        cfg = config.milanglacier.${config.home.username};
+        cfg = config.milanglacier.windowManager;
     in {
-        milanglacier.${config.home.username} = {
+        milanglacier.windowManager = {
             shell = lib.mkIf (sysShell != null) (lib.mkDefault sysShell);
-            windowManager = lib.mkIf (sysSession != null) (lib.mkDefault sysSession);
+            name = lib.mkIf (sysSession != null) (lib.mkDefault sysSession);
         };
 
-        programs.${cfg.shell.pname} = lib.mkIf (cfg.windowManager != null) {
+        programs.${cfg.shell.pname} = lib.mkIf (cfg.name != null) {
             # Only startx if there is no DISPLAY and we are on the first
             # virtual terminal
             profileExtra = lib.mkOrder 1000 ''
@@ -30,14 +33,10 @@
             '';
         };
 
-        home.file.".xinitrc" = lib.mkIf (cfg.windowManager != null) {
+        home.file.".xinitrc" = lib.mkIf (cfg.name != null) {
             # Extract the session name (e.g., "i3" from "none+i3") and execute it.
             text = ''
-            export QT_SCALE_FACTOR=2
-            # This is required for IM working in kitty
-            export GLFW_IM_MODULE=ibus
-            export LIBGL_ALWAYS_SOFTWARE=1
-            exec ${lib.last (builtins.split "\\+" cfg.windowManager)}
+            exec ${lib.last (builtins.split "\\+" cfg.name)}
             '';
         };
     };
