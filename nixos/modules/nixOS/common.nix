@@ -12,7 +12,6 @@
         ripgrep
         vifm
         tmux
-        xclip
         zoxide
         zsh
         dust

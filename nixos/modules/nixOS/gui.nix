@@ -32,6 +32,7 @@
                 xorg.libxcvt
                 playerctl
                 pulseaudio # although we are using pipewire, we still need this for pactl
+                xclip
             ];
         };
 
