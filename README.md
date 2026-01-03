@@ -200,8 +200,8 @@ Extra mode options:
 | f    | Enter extra-fn mode |
 
 Extra-fn mode uses xdotool to simulate F-key events. This is particularly
-useful when accessing a remote desktop via a mobile device or tablet where
-physical function keys are unavailable.
+useful when accessing a remote desktop via a mobile device or tablet where the
+physical keyboard does not have F-keys.
 
 Extra-fn mode options:
 
