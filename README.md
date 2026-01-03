@@ -155,6 +155,7 @@ Mode keymap:
 | Super+m | Enter move mode         |
 | Super+r | Enter resize mode       |
 | Super+n | Enter notification mode |
+| Super+x | Enter extra mode        |
 
 Layout mode options:
 
@@ -192,6 +193,24 @@ Notification mode options:
 | a    | Show notification context  |
 | z    | Toggle notifications       |
 
+Extra mode options:
+
+| Keys | Description         |
+| ---- | ------------------- |
+| f    | Enter extra-fn mode |
+
+Extra-fn mode uses xdotool to simulate F-key events. This is particularly
+useful when accessing a remote desktop via a mobile device or tablet where
+physical function keys are unavailable.
+
+Extra-fn mode options:
+
+| Keys  | Description |
+| ----- | ----------- |
+| 1-0   | Send F1-F10 |
+| minus | Send F11    |
+| equal | Send F12    |
+
 Move mode options:
 
 | Keys | Description                       |
@@ -215,7 +234,6 @@ and reload the i3 configuration:
 # Useful Scripts
 
 1. `change_color_scheme`
-
    - Switches between Rose Pine Dawn and Rose Pine Moon themes based
      on system time
    - Dawn theme: Active between 7AM and 11PM

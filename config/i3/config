@@ -196,6 +196,42 @@ mode "notification" {
     bindsym Escape mode "default"
 }
 
+bindsym $mod+x mode "extra"
+mode "extra" {
+    bindsym f mode "extra-fn"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym $mod+x mode "default"
+}
+
+# Use xdotool to simulate F-key events. This is particularly useful when
+# accessing a remote desktop via a mobile device or tablet where physical
+# function keys are unavailable.
+#
+# HACK: Surprisingly, using `xdotool key F1` sends `Alt+F1` rather than a
+# standalone `F1` event. The cause of this unexpected behavior is currently
+# unknown, though it can be verified using the `xev` utility. To circumvent
+# this and send standalone function keys, we must use raw keycodes (derived
+# from `xev` output) instead of symbolic names like `F1`.
+mode "extra-fn" {
+    # Map through F1 to F12
+    bindsym --release 1 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 67
+    bindsym --release 2 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 68
+    bindsym --release 3 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 69
+    bindsym --release 4 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 70
+    bindsym --release 5 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 71
+    bindsym --release 6 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 72
+    bindsym --release 7 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 74
+    bindsym --release 8 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 75
+    bindsym --release 9 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 76
+    bindsym --release 0 mode "default"; exec --no-startup-id xdotool key --clearmodifiers 77
+    bindsym --release minus mode "default"; exec --no-startup-id xdotool key --clearmodifiers 95
+    bindsym --release equal mode "default"; exec --no-startup-id xdotool key --clearmodifiers 96
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10%
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
