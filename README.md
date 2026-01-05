@@ -156,6 +156,35 @@ Mode keymap:
 | Super+r | Enter resize mode       |
 | Super+n | Enter notification mode |
 | Super+x | Enter extra mode        |
+| Super+p | Enter passthrough mode  |
+| Super+d | Enter direct mode       |
+
+Passthrough mode temporarily disables most i3 bindings so focused apps (e.g.,
+VMs) receive key combinations directly. Press `Super+p` again to exit.
+
+Direct mode is a submap for remote desktop sessions where Command-based
+shortcuts maybe intercepted or remapped (e.g., when using RDP clien t on iOS).
+It provides local i3 controls without using the Command key. Press `Super+d` to
+enter, then use the keys below and press `Return` or `Escape` to exit.
+
+Direct mode options:
+
+| Keys    | Description              |
+| ------- | ------------------------ |
+| q       | Kill focused window      |
+| e       | Send Escape              |
+| w       | Enter layout mode        |
+| m       | Enter move mode          |
+| a       | Enter app mode           |
+| r       | Enter resize mode        |
+| n       | Enter notification mode  |
+| x       | Enter extra mode         |
+| h/j/k/l | Focus left/down/up/right |
+| f       | Toggle fullscreen        |
+| Shift+r | Restart i3               |
+| slash   | Toggle input method      |
+| Return  | Exit direct mode         |
+| Escape  | Exit direct mode         |
 
 Layout mode options:
 

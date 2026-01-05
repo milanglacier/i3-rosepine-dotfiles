@@ -71,6 +71,49 @@ bindsym $mod+slash exec --no-startup-id fcitx5-remote -t
 
 bindsym $mod+q kill
 
+# Create a "passthrough" mode to send key combinations. This is particularly
+# useful on sneding keys inside VM.
+bindsym $mod+p mode "passthrough"
+mode "passthrough" {
+    bindsym $mod+p mode "default"
+}
+
+# Create a "direct" mode to send key combinations directly to remote desktops.
+# This is particularly useful when using the Windows App on macOS or iOS, where
+# many Command-key shortcuts (e.g., Command+A) are intercepted due to the
+# Cmd→Ctrl translation (e.g., Cmd+C becomes Ctrl+C). Additionally, certain
+# shortcuts like Cmd+P or Cmd+W are reserved as system-wide commands and cannot
+# be passed through.
+bindsym $mod+d mode "direct"
+mode "direct" {
+    bindsym q kill; mode "default"
+    # Send Esc key. This is particularly useful when accessing a remote desktop
+    # via a mobile device or tablet where the physical keyboard does not have
+    # ESC key.
+    bindsym --release e mode "default"; exec --no-startup-id xdotool key --clearmodifiers Escape
+
+    bindsym w mode "layout"
+    bindsym m mode "move"
+    bindsym a mode "app"
+    bindsym r mode "resize"
+    bindsym n mode "notification"
+    bindsym x mode "extra"
+
+
+    bindsym h focus left
+    bindsym j focus down
+    bindsym k focus up
+    bindsym l focus right
+
+    bindsym f fullscreen toggle; mode "default"
+    bindsym shift+r restart
+    bindsym slash exec --no-startup-id fcitx5-remote -t
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
