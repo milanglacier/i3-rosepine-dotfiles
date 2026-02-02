@@ -2,7 +2,6 @@
     # Certain programs rely on the /libexec directory, necessitating a symlink
     # from the generated Nix directory to the canonical FHS directory.
     environment.pathsToLink = ["/libexec"];
-    services.displayManager.defaultSession = "none+i3";
     services.xserver = {
         enable = true;
 
