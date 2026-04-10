@@ -4,17 +4,37 @@ if [ -z "$MY_DOTFILES_DIR" ]; then
     MY_DOTFILES_DIR="$HOME/Desktop/dotfiles"
 fi
 
-# homebrew uses gsed instead of sed, because macOS builtin sed
-# does not support sed -i without a backfile
-command -v gsed >/dev/null 2>&1 && SED_PROGRAM="gsed" || SED_PROGRAM="sed"
+# macOS ships BSD sed. Prefer GNU sed when available, because BSD sed lacks
+# options this script depends on (e.g., in-place edits without backups).
+uname_out="$(uname)"
 
-if [[ "$SED_PROGRAM" == "sed" && "$(uname)" == "Darwin" ]]; then
-    echo "Please install the gnu sed and name the executable as gsed" 1>&2
-    exit 1
+if [[ "$uname_out" == "Darwin" ]]; then
+    SED_PROGRAM=""
+    sed_candidates=(sed gsed gnused)
+    for candidate in "${sed_candidates[@]}"; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            version_output=$("$candidate" --version 2>/dev/null || true)
+            if echo "$version_output" | grep -qi 'GNU sed'; then
+                SED_PROGRAM="$candidate"
+                break
+            fi
+        fi
+    done
+
+    if [ -z "$SED_PROGRAM" ]; then
+        echo "Please install GNU sed and ensure it is available on your PATH." 1>&2
+        exit 1
+    fi
+else
+    if command -v gsed >/dev/null 2>&1; then
+        SED_PROGRAM="gsed"
+    else
+        SED_PROGRAM="sed"
+    fi
 fi
 
-night_timepoint=23
-day_timepoint=7
+night_timepoint=19
+day_timepoint=8
 
 # if the variable $THEME_MODE is not set, then set this variable based on $day_timepoint and $night_timepoint
 if [ -z "$THEME_MODE" ]; then
@@ -25,23 +45,46 @@ if [ -z "$THEME_MODE" ]; then
     fi
 fi
 
+neomuttrc="$HOME/.config/neomutt/neomuttrc"
 kittrc="$HOME/.config/kitty/kitty.conf"
 
 # sed -i edits files in-place, breaks symlinks. This limitation means:
 # 1. sed -i can only be safely used on original files.
 # 2. It cannot be applied directly to symlinked files.
 # 3. However, sed -i can work if the parent directory is symlinked.
+vscoderc="$MY_DOTFILES_DIR/config/Code/User/settings.json"
+aichatrc="$MY_DOTFILES_DIR/config/aichat/config.yaml"
+zellijrc="$HOME/.config/zellij/config.kdl"
+alacritty_rc="$HOME/.config/alacritty/alacritty.toml"
+vifm_rc="$HOME/.config/vifm/vifmrc"
+helix_rc="$HOME/.config/helix/config.toml"
 tmux_rc="$HOME/.config/tmux/tmux.conf"
+ghostty_rc="$HOME/.config/ghostty/config"
 i3_rc="$HOME/.config/i3/config"
+sway_rc="$HOME/.config/sway/config"
 polybar_rc="$HOME/.config/polybar/config.ini"
+waybar_rc="$HOME/.config/waybar/style.css"
 rofi_rc="$HOME/.config/rofi/config.rasi"
 gtk3_rc="$HOME/.config/gtk-3.0/settings.ini"
 dunstd="$HOME/.config/dunst"
+termux_dir="$HOME/.termux"
 
 theme_separator="|" # use \t as separator
 
-kitty_day="Rose Pine Dawn"
-kitty_night="Rose Pine Moon"
+kitty_day="Belafonte Day|Catppuccin-Latte|vimbones|Rose Pine Dawn|Everforest Light Soft|Solarized Light|seoulbones_light|Kaolin Breeze"
+kitty_night="Catppuccin-Mocha|Everforest Dark Soft|Rose Pine Moon|seoulbones_dark"
+
+zellij_day="catppuccin-latte|rose-pine-dawn|pencil-light"
+zellij_night="nightfox|catppuccin-mocha|rose-pine-moon|everforest-dark"
+
+alacritty_day="dawnfox|solarized_light|tokyonight_light|rosepinedawn"
+alacritty_night="nightfox|kanagawa|catppuccin_mocha|seoul256|tokyonight_dark|rosepinemoon"
+
+vifm_day="papercolor-light|solarized-light|reicheltd-light"
+vifm_night="papercolor-dark|nord|gruvbox"
+
+helix_day="everforest_light|rose_pine_dawn|catppuccin_latte|tokyonight_day"
+helix_night="everforest_dark|rose_pine_moon|catppuccin_mocha|nightfox|tokyonight_moon"
 
 tmux_day="color224"
 tmux_night="color60"
@@ -49,14 +92,23 @@ tmux_night="color60"
 i3_day="rose-pine-dawn"
 i3_night="rose-pine-moon"
 
+sway_day="rose-pine-dawn"
+sway_night="rose-pine-moon"
+
 polybar_day="rose-pine-dawn"
 polybar_night="rose-pine-moon"
+
+waybar_day="rose-pine-dawn"
+waybar_night="rose-pine-moon"
 
 gtk3_day="rose-pine-dawn"
 gtk3_night="rose-pine-moon"
 
 rofi_day="rose-pine-dawn"
 rofi_night="rose-pine-moon"
+
+ghostty_day="Rose Pine Dawn|Catppuccin Latte|Everforest Light Med|TokyoNight Day"
+ghostty_night="Rose Pine Moon|Catppuccin Mocha|Everforest Dark Hard|TokyoNight Moon"
 
 is_graphical_session() {
     # Consider X11 or Wayland sessions as graphical
@@ -65,6 +117,22 @@ is_graphical_session() {
     else
         return 1
     fi
+}
+
+is_gsettings_appropriate() {
+    # The `gsettings` utility is necessary only under Wayland, as X11
+    # environments respect the configuration in
+    # `~/.config/gtk-3.0/settings.ini`. Therefore, we exit if the session type
+    # is not Wayland or if the `gsettings` command is unavailable.
+    if [[ "$XDG_SESSION_TYPE" != "wayland" ]]; then
+        return 1
+    fi
+
+    if gsettings list-schemas >/dev/null 2>&1; then
+        return 0
+    fi
+
+    return 1
 }
 
 function replace_theme_randomly() {
@@ -95,95 +163,181 @@ function replace_theme_randomly() {
 }
 
 if [ "$THEME_MODE" = "night" ]; then
-
-    # change the color scheme of kitty
-    if [ -f "$kittrc" ]; then
-        replace_theme_randomly "$kittrc" "$theme_separator" "$kitty_night" "$kitty_day"
-    fi
-
-    if [ -f "$tmux_rc" ]; then
-        replace_theme_randomly "$tmux_rc" "$theme_separator" "$tmux_night" "$tmux_day"
-        # if there is a current running tmux daemon, reload the config
-        if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1; then
-            tmux source-file "$tmux_rc"
-        fi
-    fi
-
-    if [ -f "$polybar_rc" ]; then
-        replace_theme_randomly "$polybar_rc" "$theme_separator" "$polybar_night" "$polybar_day"
-    fi
-
-    if [ -f "$rofi_rc" ]; then
-        replace_theme_randomly "$rofi_rc" "$theme_separator" "$rofi_night" "$rofi_day"
-    fi
-
-    if [ -f "$gtk3_rc" ]; then
-        replace_theme_randomly "$gtk3_rc" "$theme_separator" "$gtk3_night" "$gtk3_day"
-    fi
-
-    if [ -d "$dunstd" ]; then
-        if [[ -L "$dunstd/dunstrc.d/10-theme.conf" && -f "$dunstd/rose-pine-moon.conf" ]]; then
-            rm "$dunstd/dunstrc.d/10-theme.conf"
-            ln -s "../rose-pine-moon.conf" "$dunstd/dunstrc.d/10-theme.conf"
-
-            if command -v dunst >/dev/null 2>&1 && is_graphical_session; then
-                killall -q -r dunst
-                dunst &
-            fi
-        fi
-    fi
-
-    if [ -f "$i3_rc" ]; then
-        replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_night" "$i3_day"
-
-        if command -v i3-msg >/dev/null 2>&1 && i3-msg -t get_version >/dev/null 2>&1; then
-            i3-msg restart
-        fi
-    fi
-
+    neomutt_from="light"
+    neomutt_to="dark"
+    vscode_from="Everforest Light"
+    vscode_to="Catppuccin Mocha"
+    aichat_from="light"
+    aichat_to="dark"
+    kitty_selected="$kitty_night"
+    kitty_alternative="$kitty_day"
+    zellij_selected="$zellij_night"
+    zellij_alternative="$zellij_day"
+    alacritty_selected="$alacritty_night"
+    alacritty_alternative="$alacritty_day"
+    vifm_selected="$vifm_night"
+    vifm_alternative="$vifm_day"
+    helix_selected="$helix_night"
+    helix_alternative="$helix_day"
+    tmux_selected="$tmux_night"
+    tmux_alternative="$tmux_day"
+    ghostty_selected="$ghostty_night"
+    ghostty_alternative="$ghostty_day"
+    polybar_selected="$polybar_night"
+    polybar_alternative="$polybar_day"
+    waybar_selected="$waybar_night"
+    waybar_alternative="$waybar_day"
+    rofi_selected="$rofi_night"
+    rofi_alternative="$rofi_day"
+    gtk3_selected="$gtk3_night"
+    gtk3_alternative="$gtk3_day"
+    dunst_theme="rose-pine-moon.conf"
+    i3_selected="$i3_night"
+    i3_alternative="$i3_day"
+    sway_selected="$sway_night"
+    sway_alternative="$sway_day"
+    gtk_mode="dark"
+    termux_colors="colors/catppuccin-mocha.properties"
+    termux_black_ui_from="false"
+    termux_black_ui_to="true"
 else
+    neomutt_from="dark"
+    neomutt_to="light"
+    vscode_from="Catppuccin Mocha"
+    vscode_to="Everforest Light"
+    aichat_from="dark"
+    aichat_to="light"
+    kitty_selected="$kitty_day"
+    kitty_alternative="$kitty_night"
+    zellij_selected="$zellij_day"
+    zellij_alternative="$zellij_night"
+    alacritty_selected="$alacritty_day"
+    alacritty_alternative="$alacritty_night"
+    vifm_selected="$vifm_day"
+    vifm_alternative="$vifm_night"
+    helix_selected="$helix_day"
+    helix_alternative="$helix_night"
+    tmux_selected="$tmux_day"
+    tmux_alternative="$tmux_night"
+    ghostty_selected="$ghostty_day"
+    ghostty_alternative="$ghostty_night"
+    polybar_selected="$polybar_day"
+    polybar_alternative="$polybar_night"
+    waybar_selected="$waybar_day"
+    waybar_alternative="$waybar_night"
+    rofi_selected="$rofi_day"
+    rofi_alternative="$rofi_night"
+    gtk3_selected="$gtk3_day"
+    gtk3_alternative="$gtk3_night"
+    dunst_theme="rose-pine-dawn.conf"
+    i3_selected="$i3_day"
+    i3_alternative="$i3_night"
+    sway_selected="$sway_day"
+    sway_alternative="$sway_night"
+    gtk_mode="light"
+    termux_colors="colors/catppuccin-latte.properties"
+    termux_black_ui_from="true"
+    termux_black_ui_to="false"
+fi
 
-    if [ -f "$kittrc" ]; then
-        replace_theme_randomly "$kittrc" "$theme_separator" "$kitty_day" "$kitty_night"
+if [ -f "$neomuttrc" ]; then
+    $SED_PROGRAM -i "/solarized/s/$neomutt_from/$neomutt_to/" "$neomuttrc"
+fi
+
+if [ -f "$kittrc" ]; then
+    replace_theme_randomly "$kittrc" "$theme_separator" "$kitty_selected" "$kitty_alternative"
+fi
+
+if [ -f "$vscoderc" ]; then
+    $SED_PROGRAM -i "/workbench.colorTheme/s/$vscode_from/$vscode_to/" "$vscoderc"
+fi
+
+if [ -f "$aichatrc" ]; then
+    $SED_PROGRAM -i "/theme/s/$aichat_from/$aichat_to/" "$aichatrc"
+fi
+
+if [ -f "$zellijrc" ]; then
+    replace_theme_randomly "$zellijrc" "$theme_separator" "$zellij_selected" "$zellij_alternative"
+fi
+
+if [ -f "$alacritty_rc" ]; then
+    replace_theme_randomly "$alacritty_rc" "$theme_separator" "$alacritty_selected" "$alacritty_alternative"
+fi
+
+if [ -f "$vifm_rc" ]; then
+    replace_theme_randomly "$vifm_rc" "$theme_separator" "$vifm_selected" "$vifm_alternative"
+fi
+
+if [ -f "$helix_rc" ]; then
+    replace_theme_randomly "$helix_rc" "$theme_separator" "$helix_selected" "$helix_alternative"
+fi
+
+if [ -f "$tmux_rc" ]; then
+    replace_theme_randomly "$tmux_rc" "$theme_separator" "$tmux_selected" "$tmux_alternative"
+    # if there is a current running tmux daemon, reload the config
+    if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1; then
+        tmux source-file "$tmux_rc"
     fi
+fi
 
-    if [ -f "$tmux_rc" ]; then
-        replace_theme_randomly "$tmux_rc" "$theme_separator" "$tmux_day" "$tmux_night"
-        # if there is a current running tmux daemon, reload the config
-        if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1; then
-            tmux source-file "$tmux_rc"
+if [ -f "$ghostty_rc" ]; then
+    replace_theme_randomly "$ghostty_rc" "$theme_separator" "$ghostty_selected" "$ghostty_alternative"
+fi
+
+if [ -f "$polybar_rc" ]; then
+    replace_theme_randomly "$polybar_rc" "$theme_separator" "$polybar_selected" "$polybar_alternative"
+fi
+
+if [ -f "$waybar_rc" ]; then
+    replace_theme_randomly "$waybar_rc" "$theme_separator" "$waybar_selected" "$waybar_alternative"
+fi
+
+if [ -f "$rofi_rc" ]; then
+    replace_theme_randomly "$rofi_rc" "$theme_separator" "$rofi_selected" "$rofi_alternative"
+fi
+
+if [ -f "$gtk3_rc" ]; then
+    replace_theme_randomly "$gtk3_rc" "$theme_separator" "$gtk3_selected" "$gtk3_alternative"
+fi
+
+if is_gsettings_appropriate; then
+    import-gtk-settings --mode "$gtk_mode"
+fi
+
+if [ -d "$dunstd" ]; then
+    if [[ -L "$dunstd/dunstrc.d/10-theme.conf" && -f "$dunstd/$dunst_theme" ]]; then
+        rm "$dunstd/dunstrc.d/10-theme.conf"
+        ln -s "../$dunst_theme" "$dunstd/dunstrc.d/10-theme.conf"
+
+        if command -v dunst >/dev/null 2>&1 && is_graphical_session; then
+            killall -q -r dunst
+            dunst &
         fi
     fi
+fi
 
-    if [ -f "$polybar_rc" ]; then
-        replace_theme_randomly "$polybar_rc" "$theme_separator" "$polybar_day" "$polybar_night"
+if [ -f "$i3_rc" ]; then
+    replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_selected" "$i3_alternative"
+
+    if command -v i3-msg >/dev/null 2>&1 && i3-msg -t get_version >/dev/null 2>&1; then
+        i3-msg restart
     fi
+fi
 
-    if [ -f "$rofi_rc" ]; then
-        replace_theme_randomly "$rofi_rc" "$theme_separator" "$rofi_day" "$rofi_night"
+if [ -f "$sway_rc" ]; then
+    replace_theme_randomly "$sway_rc" "$theme_separator" "$sway_selected" "$sway_alternative"
+
+    if command -v swaymsg >/dev/null 2>&1 && swaymsg -t get_version >/dev/null 2>&1; then
+        swaymsg reload
     fi
+fi
 
-    if [ -f "$gtk3_rc" ]; then
-        replace_theme_randomly "$gtk3_rc" "$theme_separator" "$gtk3_day" "$gtk3_night"
+if [ -d "$termux_dir" ]; then
+    ln -sfn "$termux_colors" "$termux_dir/colors.properties"
+    if [ -f "$termux_dir/termux.properties" ]; then
+        $SED_PROGRAM -i "/use-black-ui/s/$termux_black_ui_from/$termux_black_ui_to/" "$termux_dir/termux.properties"
     fi
-
-    if [ -d "$dunstd" ]; then
-        if [[ -L "$dunstd/dunstrc.d/10-theme.conf" && -f "$dunstd/rose-pine-dawn.conf" ]]; then
-            rm "$dunstd/dunstrc.d/10-theme.conf"
-            ln -s "../rose-pine-dawn.conf" "$dunstd/dunstrc.d/10-theme.conf"
-
-            if command -v dunst >/dev/null 2>&1 && is_graphical_session; then
-                killall -q -r dunst
-                dunst &
-            fi
-        fi
-    fi
-
-    if [ -f "$i3_rc" ]; then
-        replace_theme_randomly "$i3_rc" "$theme_separator" "$i3_day" "$i3_night"
-
-        if command -v i3-msg >/dev/null 2>&1 && i3-msg -t get_version >/dev/null 2>&1; then
-            i3-msg restart
-        fi
+    if command -v termux-reload-settings >/dev/null 2>&1; then
+        termux-reload-settings
     fi
 fi
