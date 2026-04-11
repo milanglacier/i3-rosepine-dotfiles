@@ -1,17 +1,12 @@
 { pkgs, username, ... }: {
 
     environment.systemPackages = with pkgs; [
-        appimage-run
-        # Codex relies on bubblewrap to provide a sandboxed environment for the
-        # agent
-        bubblewrap
+        bash
+        gnused
 
-        neovim
         wget
         curl
         git
-        sysstat
-        psmisc
         fzf
         ripgrep
         fd
@@ -23,23 +18,20 @@
         dust
         delta
         htop
+        catimg
         mosh
 
         zip
         unzip
-
-        libnotify
-        xdg-utils
 
         nodejs
 
         python3
 
         universal-ctags
-    ];
 
-    programs.gnupg.agent = {
-        enable = true;
-        pinentryPackage = pkgs.pinentry-tty;
-    };
+        # Nix-darwin lacks a builtin podman module
+        podman
+        podman-compose
+    ];
 }

@@ -1,21 +1,6 @@
 { pkgs, ... }: {
-    # Copied from https://github.com/ryan4yin/nix-config/blob/main/modules/nixos/desktop/fhs.nix
-    # FHS environment, flatpak, appImage, etc.
     environment.systemPackages = [
-        # create a fhs environment by command `fhs`, so we can run non-nixos packages in nixos!
-        (
-            let
-                base = pkgs.appimageTools.defaultFhsEnvArgs;
-            in
-                pkgs.buildFHSUserEnv (base
-                    // {
-                        name = "fhs";
-                        targetPkgs = pkgs: (base.targetPkgs pkgs) ++ [pkgs.pkg-config];
-                        profile = "export FHS=1";
-                        runScript = "bash";
-                        extraOutputsToInstall = ["dev"];
-                    })
-        )
+        (let fhs = import ../../lib/fhs.nix; in fhs { inherit pkgs; name = "fhs"; })
     ];
 
     # https://github.com/Mic92/nix-ld
@@ -47,4 +32,8 @@
             stdenv.cc.cc
         ];
     };
+
+    # Certain programs rely on the /libexec directory, necessitating a symlink
+    # from the generated Nix directory to the canonical FHS directory.
+    environment.pathsToLink = ["/libexec"];
 }

@@ -1,38 +1,31 @@
-{
-pkgs,
-lib,
-username,
-...
-}: {
+{ pkgs, lib, username, ... }: {
     users.users.${username} = {
         isNormalUser = true;
         description = username;
         extraGroups = ["networkmanager" "wheel"];
     };
-    nix.settings.trusted-users = [username];
 
     nix.settings = {
+        trusted-users = [username];
         experimental-features = ["nix-command" "flakes"];
+        substituters = [
+            "https://nix-community.cachix.org"
+        ];
+        trusted-public-keys = [
+            "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        ];
     };
 
     nix.gc = {
-        automatic = lib.mkDefault true;
-        dates = lib.mkDefault "weekly";
-        options = lib.mkDefault "--delete-older-than 7d";
+        automatic = true;
+        dates = "weekly";
+        options = "--delete-older-than 7d";
     };
+    nix.settings.auto-optimise-store = true;
 
     nixpkgs.config.allowUnfree = true;
 
-    time.timeZone = "America/New_York";
-
-    i18n.defaultLocale = "en_US.UTF-8";
-
-    # Enable CUPS to print documents.
-    services.printing.enable = true;
-
-    programs.dconf.enable = true;
-
-    networking.firewall.enable = false;
+    networking.firewall.enable = true;
 
     services.openssh = {
         enable = true;
@@ -45,20 +38,6 @@ username,
     };
 
     hardware.enableAllFirmware = true;
-    hardware.pulseaudio.enable = false;
+    services.pulseaudio.enable = false;
     security.polkit.enable = true;
-
-    services = {
-        dbus.packages = [pkgs.gcr];
-
-        geoclue2.enable = true;
-
-        pipewire = {
-            enable = true;
-            alsa.enable = true;
-            alsa.support32Bit = true;
-            pulse.enable = true;
-            jack.enable = true;
-        };
-    };
 }

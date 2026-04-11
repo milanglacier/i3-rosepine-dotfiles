@@ -1,7 +1,7 @@
 { lib, pkgs, ... }: {
     environment.systemPackages = with pkgs; [
         zathura
-        xfce.thunar
+        thunar
         kitty
     ];
 }
