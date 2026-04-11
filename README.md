@@ -93,16 +93,16 @@ git clone https://github.com/milanglacier/i3-rosepine-dotfiles.git dotfiles
 
 ### build system ###
 # Update hardware configuration
-cd ~/Desktop/dotfiles/nixos/hosts/qemu
+cd ~/Desktop/dotfiles/nixos/hosts/adagioOfIslands
 rm hardware-configuration.nix
 cp /etc/nixos/hardware-configuration.nix .
 
 # if you are running on aarch64
 cd ~/Desktop/dotfiles/nixos
-sudo nixos-rebuild switch --show-trace --flake '.#qemu-aarch64'
+sudo nixos-rebuild switch --flake '.#adagioOfIslands-milanglacier-aarch64-linux'
 
 # if you are running on x86_64
-sudo nixos-rebuild switch --show-trace --flake '.#qemu-x86_64'
+sudo nixos-rebuild switch --flake '.#adagioOfIslands-milanglacier-x86_64-linux'
 
 ### Download wallpapers, icons, and fonts ###
 cd ~/Desktop/dotfiles
