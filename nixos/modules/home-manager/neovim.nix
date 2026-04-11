@@ -1,29 +1,19 @@
-{
-config,
-lib,
-pkgs,
-...
-}: {
+{ config, lib, pkgs, ... }: {
     home.packages = with pkgs; [
         # use current neovim session as $EDITOR when running embedded terminal
         # inside neovim
         neovim-remote
         # build deps
-        gcc
         gnumake
         tree-sitter
         # generic lsp
         efm-langserver
-        # python
-        basedpyright
-        black
         # lua
         lua-language-server
         stylua
-        # markdown
-        prettierd
-        vale
-    ];
+    ] ++
+        # required to build treesitter grammar
+        lib.optionals (pkgs.stdenv.isLinux) [ gcc ] ;
     programs = {
         neovim = {
             enable = true;

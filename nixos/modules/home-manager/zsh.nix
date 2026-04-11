@@ -1,6 +1,11 @@
 { pkgs, config, my-dots-dir, lib, ... }: {
     programs.zsh = {
         enable = true;
+        # Keep the default configuration directory for Zsh. I prefer to avoid
+        # migrating to the XDG directory structure until Zsh offers official
+        # upstream support, rather than relying on Home Manager's workaround
+        # (which became the default after version 26.05).
+        dotDir = config.home.homeDirectory;
         enableCompletion = true;
         # don't call compinit as zimfw will call it for us.
         completionInit = "";
@@ -16,6 +21,7 @@
             lib.mkMerge [ zshConfigBeforeInit zshConfigAfterInit ];
 
         profileExtra = lib.mkOrder 500 ''
+            [ -f /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
             [[ -f "${my-dots-dir config}/creds/api-keys.sh" ]] && source "${my-dots-dir config}/creds/api-keys.sh"
         '';
 
