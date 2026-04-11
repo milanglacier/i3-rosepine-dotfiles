@@ -26,9 +26,5 @@ in
         "polybar" = link-xdg "polybar";
         "rofi" = link-xdg "rofi";
         "tmux" = link-xdg "tmux";
-        "feh" = {
-            source = "${wallpapers}";
-            recursive = true;
-        };
     };
 }

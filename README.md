@@ -109,6 +109,7 @@ cd ~/Desktop/dotfiles
 ./bin/download-release-packages
 ./bin/download-rosepine-gtk3-theme.sh
 ./bin/download-rosepine-fcitx5-theme.sh
+./bin/download-rosepine-wallpapers.sh
 ```
 
 Optionally, you can use my neovim and emacs configuration, they are available
