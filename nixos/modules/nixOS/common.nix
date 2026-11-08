@@ -1,45 +1,46 @@
-{ pkgs, username, ... }: {
+{ pkgs, username, ... }:
+{
 
-    environment.systemPackages = with pkgs; [
-        appimage-run
-        # Codex relies on bubblewrap to provide a sandboxed environment for the
-        # agent
-        bubblewrap
+  environment.systemPackages = with pkgs; [
+    appimage-run
+    # Codex relies on bubblewrap to provide a sandboxed environment for the
+    # agent
+    bubblewrap
 
-        neovim
-        wget
-        curl
-        git
-        sysstat
-        psmisc
-        fzf
-        ripgrep
-        fd
-        vifm
-        yazi
-        lazygit
-        tmux
-        zoxide
-        dust
-        delta
-        htop
-        mosh
+    neovim
+    wget
+    curl
+    git
+    sysstat
+    psmisc
+    fzf
+    ripgrep
+    fd
+    vifm
+    yazi
+    lazygit
+    tmux
+    zoxide
+    dust
+    delta
+    htop
+    mosh
 
-        zip
-        unzip
+    zip
+    unzip
 
-        libnotify
-        xdg-utils
+    libnotify
+    xdg-utils
 
-        nodejs
+    nodejs
 
-        python3
+    python3
 
-        universal-ctags
-    ];
+    universal-ctags
+  ];
 
-    programs.gnupg.agent = {
-        enable = true;
-        pinentryPackage = pkgs.pinentry-tty;
-    };
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-tty;
+  };
 }

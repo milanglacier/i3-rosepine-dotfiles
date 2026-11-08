@@ -1,37 +1,38 @@
-{ pkgs, username, ... }: {
+{ pkgs, username, ... }:
+{
 
-    environment.systemPackages = with pkgs; [
-        bash
-        gnused
+  environment.systemPackages = with pkgs; [
+    bash
+    gnused
 
-        wget
-        curl
-        git
-        fzf
-        ripgrep
-        fd
-        vifm
-        yazi
-        lazygit
-        tmux
-        zoxide
-        dust
-        delta
-        htop
-        catimg
-        mosh
+    wget
+    curl
+    git
+    fzf
+    ripgrep
+    fd
+    vifm
+    yazi
+    lazygit
+    tmux
+    zoxide
+    dust
+    delta
+    htop
+    catimg
+    mosh
 
-        zip
-        unzip
+    zip
+    unzip
 
-        nodejs
+    nodejs
 
-        python3
+    python3
 
-        universal-ctags
+    universal-ctags
 
-        # Nix-darwin lacks a builtin podman module
-        podman
-        podman-compose
-    ];
+    # Nix-darwin lacks a builtin podman module
+    podman
+    podman-compose
+  ];
 }

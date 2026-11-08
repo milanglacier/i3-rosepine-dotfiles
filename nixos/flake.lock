@@ -21,6 +21,27 @@
         "type": "github"
       }
     },
+    "nix-darwin": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793418699,
+        "narHash": "sha256-+RpTlcdh9KqZ+ZiLkNSTvibQWm935EcIdBzRPCTFsrQ=",
+        "owner": "nix-darwin",
+        "repo": "nix-darwin",
+        "rev": "ff0e21a414d4547183396da1b44a66f2577b65e9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-darwin",
+        "ref": "master",
+        "repo": "nix-darwin",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1745955289,
@@ -56,26 +77,9 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "nix-darwin": "nix-darwin",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs",
-        "wallpapers": "wallpapers"
-      }
-    },
-    "wallpapers": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1732849459,
-        "narHash": "sha256-wx2AxRks+o22C9fYZzDg77F+ShpdqmE3auR/+MM7Pes=",
-        "owner": "milanglacier",
-        "repo": "wallpapers",
-        "rev": "4ab8b88685ddaa88348c550792592cae51fa8915",
-        "type": "github"
-      },
-      "original": {
-        "owner": "milanglacier",
-        "ref": "main",
-        "repo": "wallpapers",
-        "type": "github"
+        "nixpkgs": "nixpkgs"
       }
     }
   },

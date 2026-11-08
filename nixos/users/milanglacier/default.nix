@@ -1,8 +1,9 @@
-{ pkgs, ... }: {
-    programs.zsh = {
-        enable = true;
-        enableGlobalCompInit = false;
+{ pkgs, ... }:
+{
+  programs.zsh = {
+    enable = true;
+    enableGlobalCompInit = false;
 
-    };
-    users.users.milanglacier.shell = pkgs.zsh;
+  };
+  users.users.milanglacier.shell = pkgs.zsh;
 }

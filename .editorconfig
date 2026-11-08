@@ -20,3 +20,9 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
+
+# `nixfmt` uses fixed two-space indentation.
+[*.nix]
+indent_style = space
+indent_size = 2
+tab_width = 2

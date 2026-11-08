@@ -1,11 +1,17 @@
-{ config, lib, pkgs, ... }: {
-    home.packages = with pkgs; [
-        jq
-    ];
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
+  home.packages = with pkgs; [
+    jq
+  ];
 
-    programs = {
-        helix = {
-            enable = true;
-        };
+  programs = {
+    helix = {
+      enable = true;
     };
+  };
 }
