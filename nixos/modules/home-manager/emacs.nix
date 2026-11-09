@@ -1,10 +1,24 @@
-{ pkgs, lib, ... }:
 {
-  # On Linux, install Emacs from Nix.
+  pkgs,
+  lib,
+  osConfig ? null,
+  ...
+}:
+let
+  # Standalone Home Manager does not pass `osConfig`.
+  osConf = if osConfig != null then osConfig else { };
+  # The NixOS desktop modules set `milanglacier.wayland.windowManager.name`
+  # when a Wayland compositor is in use.
+  isWayland = lib.attrByPath [ "milanglacier" "wayland" "windowManager" "name" ] null osConf != null;
+in
+{
+  # On Linux, install Emacs from Nix. Use the pure GTK build on Wayland. Use
+  # the X11 build elsewhere, including standalone Home Manager, because pgtk
+  # does not support X11, while the X11 build also runs under XWayland.
   # On macOS, use the prebuilt binary from jimeh/emacs-builds on GitHub.
   programs.emacs = lib.mkIf pkgs.stdenv.isLinux {
     enable = true;
-    package = pkgs.emacs;
+    package = if isWayland then pkgs.emacs31-pgtk else pkgs.emacs31;
   };
 
   home.packages = with pkgs; [
