@@ -22,7 +22,7 @@
     ]
     ++
       # required to build treesitter grammar
-      lib.optionals (pkgs.stdenv.isLinux) [ gcc ];
+      lib.optionals (pkgs.stdenv.hostPlatform.isLinux) [ gcc ];
   programs = {
     neovim = {
       enable = true;

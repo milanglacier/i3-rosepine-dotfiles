@@ -25,6 +25,6 @@
     enable = true;
     enableZshIntegration = true;
     defaultCacheTtl = 7200;
-    pinentry.package = if pkgs.stdenv.isLinux then pkgs.pinentry-tty else pkgs.pinentry_mac;
+    pinentry.package = if pkgs.stdenv.hostPlatform.isLinux then pkgs.pinentry-tty else pkgs.pinentry_mac;
   };
 }

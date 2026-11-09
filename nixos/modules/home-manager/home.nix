@@ -2,7 +2,7 @@
 {
   home = {
     inherit username;
-    homeDirectory = if pkgs.stdenv.isLinux then "/home/${username}" else "/Users/${username}";
+    homeDirectory = if pkgs.stdenv.hostPlatform.isLinux then "/home/${username}" else "/Users/${username}";
 
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage

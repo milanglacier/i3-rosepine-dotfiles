@@ -38,8 +38,8 @@
   };
 
   # Make xdg-open and open the same between macOS and Linux
-  home.shellAliases.${if pkgs.stdenv.isLinux then "open" else "xdg-open"} = "${
-    if pkgs.stdenv.isLinux then "xdg-open" else "open"
+  home.shellAliases.${if pkgs.stdenv.hostPlatform.isLinux then "open" else "xdg-open"} = "${
+    if pkgs.stdenv.hostPlatform.isLinux then "xdg-open" else "open"
   }";
 
   home.sessionPath = [

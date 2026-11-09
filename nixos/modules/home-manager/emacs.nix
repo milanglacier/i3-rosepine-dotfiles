@@ -16,7 +16,7 @@ in
   # the X11 build elsewhere, including standalone Home Manager, because pgtk
   # does not support X11, while the X11 build also runs under XWayland.
   # On macOS, use the prebuilt binary from jimeh/emacs-builds on GitHub.
-  programs.emacs = lib.mkIf pkgs.stdenv.isLinux {
+  programs.emacs = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     enable = true;
     package = if isWayland then pkgs.emacs31-pgtk else pkgs.emacs31;
   };

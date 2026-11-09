@@ -70,6 +70,6 @@ let
   isEnabled = wm: (lib.attrByPath wm.path false osConf) == true;
   selected =
     # macOS does not have x11 windowManager
-    if pkgs.stdenv.isLinux then lib.findFirst isEnabled null windowManagers else null;
+    if pkgs.stdenv.hostPlatform.isLinux then lib.findFirst isEnabled null windowManagers else null;
 in
 if selected == null then null else selected.name
